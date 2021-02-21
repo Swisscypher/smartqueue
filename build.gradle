@@ -1,0 +1,94 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'java'
+    id 'net.minecrell.licenser' version '0.4.1'
+    id 'com.github.breadmoirai.github-release' version '2.2.12'
+}
+
+group 'ch.swisscypher.smartqueue'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+apply plugin: "net.minecrell.licenser"
+apply plugin: "com.github.breadmoirai.github-release"
+
+compileJava {
+    dependsOn checkLicenses
+}
+
+license {
+    header = project.file("HEADER")
+    include("**/*.java")
+
+    newLine = true
+}
+
+def determineVersion = {
+    // get the name of the last tag
+    def version = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags', '--first-parent', '--always'
+        standardOutput = version
+    }
+    version = version.toString().replaceAll("\\s", "").replaceAll("^v", "")
+
+    try {
+        exec {
+            commandLine("git", "diff", "--exit-code", "--quiet")
+        }
+    } catch (ignored) {
+        return "${version}.dirty"
+    }
+
+    return version
+}
+
+version = determineVersion()
+
+jar {
+    from("LICENSE")
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    compile group: 'ch.swisscypher', name: 'smartqueue-api', version: 'v1.1'
+
+    compileOnly group: 'net.md-5', name: 'bungeecord-api', version: '1.16-R0.3'
+    compileOnly group: 'org.spigotmc', name:'spigot-api', version:'1.12.2-R0.1-SNAPSHOT'
+    compileOnly group: 'org.bukkit', name:'bukkit', version:'1.12.2-R0.1-SNAPSHOT'
+
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.1'
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+processResources {
+    from('src/main/resources') {
+        include 'plugin.yml'
+        include 'bungee.yml'
+        expand('version': project.version)
+    }
+}
+
+shadowJar {
+    from("LICENSE")
+    archiveBaseName = 'SmartQueue'
+}
+
+tasks {
+    githubRelease {
+        token System.getenv("GITHUB_TOKEN").toString()
+        owner "swisscypher"
+        releaseAssets shadowJar.archiveFile
+    }
+}

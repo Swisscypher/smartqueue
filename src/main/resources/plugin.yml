@@ -1,0 +1,5 @@
+main: ch.swisscypher.smartqueue.spigot.MainSpigot
+name: SmartQueue
+version: ${version}
+author: Zayceur
+website: https://zayceur.ch

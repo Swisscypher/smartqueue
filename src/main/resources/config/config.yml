@@ -1,0 +1,10 @@
+lang: 'en.yml'
+queues:
+  - name: 'queue1'
+    destination: 'srv'
+    waiting: 1000
+    need-priority: true
+  - name: 'queue2'
+    destination: 'srv2'
+    waiting: 2000
+    need-priority: false
