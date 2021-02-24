@@ -40,6 +40,7 @@ public class Message implements Serializable {
         return id;
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Serializable> T getReturnedValue() {
         return (T)returnedValue;
     }

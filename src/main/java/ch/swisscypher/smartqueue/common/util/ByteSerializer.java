@@ -23,6 +23,7 @@ public class ByteSerializer {
 
     private ByteSerializer() { }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Serializable> T fromByte(byte[] bytes) {
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
         try {
