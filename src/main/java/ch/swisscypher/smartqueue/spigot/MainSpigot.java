@@ -18,7 +18,10 @@
 package ch.swisscypher.smartqueue.spigot;
 
 import ch.swisscypher.smartqueue.common.constant.Channel;
+import ch.swisscypher.smartqueue.common.util.LicenseManager;
 import ch.swisscypher.smartqueue.spigot.api.SmartQueue;
+import ch.swisscypher.smartqueue.spigot.command.LicenseCommand;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,6 +46,9 @@ public class MainSpigot extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        Bukkit.getLogger().warning(LicenseManager.NOTICE);
+
+        getCommand("smartqueue").setExecutor(new LicenseCommand());
         getServer().getMessenger().registerOutgoingPluginChannel(this, Channel.METHODS);
         getServer().getMessenger().registerIncomingPluginChannel(this, Channel.METHODS, MessageManager.getInstance());
         getServer().getServicesManager().register(SmartQueue.class, new SQ(), this, ServicePriority.High);
