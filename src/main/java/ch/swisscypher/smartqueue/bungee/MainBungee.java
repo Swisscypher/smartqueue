@@ -4,7 +4,7 @@
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License.
+ * the Free Software Foundation, version 3 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,12 +19,14 @@ package ch.swisscypher.smartqueue.bungee;
 
 import ch.swisscypher.smartqueue.bungee.command.BypassQueue;
 import ch.swisscypher.smartqueue.bungee.command.JoinQueue;
+import ch.swisscypher.smartqueue.bungee.command.LicenseCommand;
 import ch.swisscypher.smartqueue.bungee.command.ToggleQueue;
 import ch.swisscypher.smartqueue.bungee.config.Config;
 import ch.swisscypher.smartqueue.bungee.event.MessageEvent;
 import ch.swisscypher.smartqueue.bungee.event.PlayerEvent;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueManager;
 import ch.swisscypher.smartqueue.common.constant.Channel;
+import ch.swisscypher.smartqueue.common.util.LicenseManager;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginDescription;
@@ -49,11 +51,14 @@ public class MainBungee extends Plugin {
 
     @Override
     public void onEnable() {
+        ProxyServer.getInstance().getLogger().warning(LicenseManager.NOTICE);
+
         Config.getInstance().load();
 
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new JoinQueue());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new ToggleQueue());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new BypassQueue());
+        ProxyServer.getInstance().getPluginManager().registerCommand(this, new LicenseCommand());
         getProxy().getPluginManager().registerListener(this, new PlayerEvent());
         getProxy().getPluginManager().registerListener(this, new MessageEvent());
         getProxy().registerChannel(Channel.METHODS);

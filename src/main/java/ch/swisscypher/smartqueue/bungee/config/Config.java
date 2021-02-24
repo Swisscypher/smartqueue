@@ -4,7 +4,7 @@
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License.
+ * the Free Software Foundation, version 3 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -81,14 +81,15 @@ public class Config {
 
     public void load() {
         SmartQueueManager.getInstance().destroyAll();
-        List<HashMap> queues = (List<HashMap>) configuration.getList("queues");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> queues = (List<HashMap<String, Object>>)configuration.getList("queues");
         queues.forEach(q -> {
-            ServerInfo destination = ProxyServer.getInstance().getServerInfo((String) q.get("destination"));
+            ServerInfo destination = ProxyServer.getInstance().getServerInfo((String)q.get("destination"));
             if(destination == null) {
                 ProxyServer.getInstance().getLogger().severe(String.format(lang.getConfiguration().getString("destination-non-existent"), q.get("destination")));
             } else {
                 ProxyServer.getInstance().getLogger().info(String.format("Queue %s added (waiting time %d, does need priority : %b)", q.get("name"), q.get("waiting"), q.get("need-priority")));
-                SmartQueueManager.getInstance().createSmartQueue((String) q.get("name"), destination, (Integer)q.get("waiting"), (Boolean)q.get("need-priority"));
+                SmartQueueManager.getInstance().createSmartQueue((String)q.get("name"), destination, (Integer)q.get("waiting"), (Boolean)q.get("need-priority"));
             }
         });
     }

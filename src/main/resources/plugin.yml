@@ -3,3 +3,6 @@ name: SmartQueue
 version: ${version}
 author: Zayceur
 website: https://zayceur.ch
+commands:
+  smartqueue:
+    usage: /<command> <c|w>
