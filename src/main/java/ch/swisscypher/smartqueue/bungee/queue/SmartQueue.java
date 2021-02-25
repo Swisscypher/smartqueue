@@ -229,13 +229,14 @@ public class SmartQueue {
     }
 
     Runnable process = () -> {
-        while(true) {
+        main: while(true) {
             lock.lock();
             try {
                 while(getAvailableSlots() <= 0 || entries.isEmpty() || !enabled) {
                     pollable.await();
                 }
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 break;
             } finally {
                 lock.unlock();
@@ -246,7 +247,8 @@ public class SmartQueue {
                 try {
                     Thread.sleep(waiting);
                 } catch (InterruptedException e) {
-                    break;
+                    Thread.currentThread().interrupt();
+                    break main;
                 }
             }
         }
