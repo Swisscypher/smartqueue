@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public class SmartQueue {
 
     private final TreeSet<SmartQueueEntry<ProxiedPlayer>> internalQueue = new TreeSet<>();
-    private final HashMap<ProxiedPlayer, SmartQueueEntry> entries = new HashMap<>();
+    private final HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>> entries = new HashMap<>();
     private final String regex;
     private final String name;
     private final Pattern pattern;
@@ -129,7 +129,7 @@ public class SmartQueue {
         }
 
         if(player.getEntry().getServer().getInfo().equals(destination)) {   // This check is performed because of the obfuscator
-            entries.remove(internalQueue.pollFirst());
+            entries.remove(internalQueue.pollFirst().getEntry());
             updateRanking();
             return;
         }
@@ -141,7 +141,7 @@ public class SmartQueue {
             }
 
             if(player.getEntry().getServer().getInfo().equals(destination)) {
-                entries.remove(internalQueue.pollFirst());
+                entries.remove(internalQueue.pollFirst().getEntry());
                 updateRanking();
             }
             sem.release();
