@@ -135,15 +135,13 @@ public class SmartQueue {
         }
 
         player.getEntry().connect(destination, (result, error) -> {
-            if(error != null) {
+            if(error != null || !result) {
                 sem.release();
                 return;
             }
 
-            if(player.getEntry().getServer().getInfo().equals(destination)) {
-                entries.remove(internalQueue.pollFirst().getEntry());
-                updateRanking();
-            }
+            entries.remove(internalQueue.pollFirst().getEntry());
+            updateRanking();
             sem.release();
         });
         try {
