@@ -75,6 +75,15 @@ public class Config {
         lang = new Lang(configuration.getString("lang"));
     }
 
+    public String getLabel(String label, Object... values) {
+        if(lang.getConfiguration().contains(label)) {
+            return String.format(lang.getConfiguration().getString(label), values);
+        } else {
+            ProxyServer.getInstance().getLogger().severe(String.format("Label %s not found", label));
+            return "";
+        }
+    }
+
     public Configuration getConfiguration() {
         return configuration;
     }
@@ -86,7 +95,7 @@ public class Config {
         queues.forEach(q -> {
             ServerInfo destination = ProxyServer.getInstance().getServerInfo((String)q.get("destination"));
             if(destination == null) {
-                ProxyServer.getInstance().getLogger().severe(String.format(lang.getConfiguration().getString("destination-non-existent"), q.get("destination")));
+                ProxyServer.getInstance().getLogger().severe(getLabel("destination-non-existent", q.get("destination")));
             } else {
                 ProxyServer.getInstance().getLogger().info(String.format("Queue %s added (waiting time %d, does need priority : %b)", q.get("name"), q.get("waiting"), q.get("need-priority")));
                 SmartQueueManager.getInstance().createSmartQueue((String)q.get("name"), destination, (Integer)q.get("waiting"), (Boolean)q.get("need-priority"));

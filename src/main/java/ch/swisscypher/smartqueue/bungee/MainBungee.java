@@ -17,10 +17,7 @@
 
 package ch.swisscypher.smartqueue.bungee;
 
-import ch.swisscypher.smartqueue.bungee.command.BypassQueue;
-import ch.swisscypher.smartqueue.bungee.command.JoinQueue;
-import ch.swisscypher.smartqueue.bungee.command.LicenseCommand;
-import ch.swisscypher.smartqueue.bungee.command.ToggleQueue;
+import ch.swisscypher.smartqueue.bungee.command.*;
 import ch.swisscypher.smartqueue.bungee.config.Config;
 import ch.swisscypher.smartqueue.bungee.event.MessageEvent;
 import ch.swisscypher.smartqueue.bungee.event.PlayerEvent;
@@ -58,7 +55,8 @@ public class MainBungee extends Plugin {
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new JoinQueue());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new ToggleQueue());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new BypassQueue());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new LicenseCommand());
+        ProxyServer.getInstance().getPluginManager().registerCommand(this, new UnstuckQueue());
+        ProxyServer.getInstance().getPluginManager().registerCommand(this, new License());
         getProxy().getPluginManager().registerListener(this, new PlayerEvent());
         getProxy().getPluginManager().registerListener(this, new MessageEvent());
         getProxy().registerChannel(Channel.METHODS);

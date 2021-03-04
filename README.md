@@ -38,7 +38,9 @@ SmartQueue uses BungeeCord permissions in order to let the players execute vario
 * `smartqueue.<queuename>.priority.<integer>` Set the player priority for a given queue and allow him to join it
 * `smartqueue.toggle.*`
     * `smartqueue.toggle.<queuename>` Allow to change the state of a given queue (enabled/disabled)
-
+* `smartqueue.unstuck.*`
+  * `smartqueue.unstuck.<queuename>` Allow to execute the `/unstuck <queue>` command that give a little push to the queue if it's locked
+  
 Warining, the permissions need to be set on the BungeeCord server !
 ## Use SmartQueue API as a dependency
 

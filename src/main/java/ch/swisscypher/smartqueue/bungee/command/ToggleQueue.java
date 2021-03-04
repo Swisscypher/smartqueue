@@ -35,18 +35,18 @@ public class ToggleQueue extends Command {
     public void execute(CommandSender sender, String[] args) {
         new Thread(() -> {
             if(!sender.hasPermission(String.format("smartqueue.toggle.%s", args[0]))) {
-                sender.sendMessage(new TextComponent(Config.getInstance().lang.getConfiguration().getString("not-allowed")));
+                sender.sendMessage(new TextComponent(Config.getInstance().getLabel("not-allowed")));
                 return;
             }
             if(args.length != 1) {
-                sender.sendMessage(new TextComponent(Config.getInstance().lang.getConfiguration().getString("toggle-usage")));
+                sender.sendMessage(new TextComponent(Config.getInstance().getLabel("toggle-usage")));
                 return;
             }
             try {
                 SmartQueueManager.getInstance().setEnabled(args[0], !SmartQueueManager.getInstance().isEnabled(args[0]));
-                sender.sendMessage(new TextComponent(String.format(Config.getInstance().lang.getConfiguration().getString("queue-toggled"), args[0], SmartQueueManager.getInstance().isEnabled(args[0]))));
+                sender.sendMessage(new TextComponent(Config.getInstance().getLabel("queue-toggled", args[0], SmartQueueManager.getInstance().isEnabled(args[0]))));
             } catch (QueueNotExistsException e) {
-                sender.sendMessage(new TextComponent(String.format(Config.getInstance().lang.getConfiguration().getString("queue-non-existent"), args[0])));
+                sender.sendMessage(new TextComponent(Config.getInstance().getLabel("queue-non-existent", args[0])));
             }
         }).start();
     }

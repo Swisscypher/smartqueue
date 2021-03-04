@@ -116,7 +116,8 @@ public class SmartQueue {
         internalQueue.parallelStream().forEach(sqe -> {
             sqe.getEntry().sendMessage(
                     ChatMessageType.ACTION_BAR,
-                    new TextComponent(String.format(String.format(Config.getInstance().lang.getConfiguration().getString("queue-position"), name, sqe.getPosition(), internalQueue.size()))));
+                    new TextComponent(Config.getInstance().getLabel("queue-position", name, sqe.getPosition(), internalQueue.size()))
+            );
         });
     }
 
