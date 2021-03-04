@@ -31,6 +31,8 @@ queues:
 
 SmartQueue se base sur les permissions pour permettre aux joueurs d'exécuter différentes commandes, d'accéder à différentes queues, de définir leur priorités.
 
+* `smartqueue.join.*`
+  * `smartqueue.join.<queuename>` Permet d'utiliser la commande `/join <queue>` qui met automatiquement le joueur qui l'exécute à la fin de la file. Le joueur peut être rajouté à la file d'attente via l'API sans qu'il ait cette permission.
 * `smartqueue.bypass.*`
   * `smartqueue.bypass.<queuename>` Permet d'utiliser la commande `/bypass <queue>` qui met automatiquement le joueur qui l'exécute au début de la file
 * `smartqueue.<queuename>.priority.<integer>` Définit la priorité d'un joueur sur une queue et l'autorise à la rejoindre
@@ -89,7 +91,7 @@ Copyright (C) 2021 Zayceur (contact@zayceur.ch)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License.
+the Free Software Foundation, version 3 of the License.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of

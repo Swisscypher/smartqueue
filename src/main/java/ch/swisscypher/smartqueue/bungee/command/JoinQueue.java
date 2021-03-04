@@ -35,6 +35,10 @@ public class JoinQueue extends Command {
     public void execute(CommandSender sender, String[] args) {
         new Thread(() -> {
             if ((sender instanceof ProxiedPlayer)) {
+                if(!sender.hasPermission(String.format("smartqueue.join.%s", args[0]))) {
+                    sender.sendMessage(new TextComponent(Config.getInstance().lang.getConfiguration().getString("not-allowed")));
+                    return;
+                }
                 if(args.length != 1) {
                     sender.sendMessage(new TextComponent(Config.getInstance().lang.getConfiguration().getString("join-usage")));
                     return;
