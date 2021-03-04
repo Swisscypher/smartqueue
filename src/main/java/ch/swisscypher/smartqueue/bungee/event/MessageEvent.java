@@ -60,7 +60,7 @@ public class MessageEvent implements Listener {
                                 try {
                                     SmartQueueManager.getInstance().addPlayerToQueue(queue, player);
                                 } catch (QueueNotExistsException queueNotExistsException) {
-                                    player.sendMessage(new TextComponent(String.format(Config.getInstance().lang.getConfiguration().getString("queue-non-existent"), queue)));
+                                    player.sendMessage(new TextComponent(Config.getInstance().getLabel("queue-non-existent", queue)));
                                 }
                             }
 
@@ -76,7 +76,7 @@ public class MessageEvent implements Listener {
                                 try {
                                     SmartQueueManager.getInstance().removePlayerFromQueue(queue, player);
                                 } catch (QueueNotExistsException queueNotExistsException) {
-                                    player.sendMessage(new TextComponent(String.format(Config.getInstance().lang.getConfiguration().getString("queue-non-existent"), queue)));
+                                    player.sendMessage(new TextComponent(Config.getInstance().getLabel("queue-non-existent", queue)));
                                 }
                             }
                             break;

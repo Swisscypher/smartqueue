@@ -24,9 +24,9 @@ import net.md_5.bungee.api.plugin.Command;
 
 import java.util.Arrays;
 
-public class LicenseCommand extends Command {
+public class License extends Command {
 
-    public LicenseCommand() {
+    public License() {
         super("smartqueue");
     }
 

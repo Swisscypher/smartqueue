@@ -22,33 +22,30 @@ import ch.swisscypher.smartqueue.bungee.exception.QueueNotExistsException;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-public class BypassQueue extends Command {
+public class UnstuckQueue extends Command {
 
-    public BypassQueue() {
-        super("bypass");
+    public UnstuckQueue() {
+        super("unstuck");
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         new Thread(() -> {
-            if ((sender instanceof ProxiedPlayer)) {
-                if(!sender.hasPermission(String.format("smartqueue.bypass.%s", args[0]))) {
-                    sender.sendMessage(new TextComponent(Config.getInstance().getLabel("not-allowed")));
-                    return;
-                }
-                if(args.length != 1) {
-                    sender.sendMessage(new TextComponent(Config.getInstance().getLabel("bypass-usage")));
-                    return;
-                }
-                ProxiedPlayer p = (ProxiedPlayer) sender;
-                try {
-                    SmartQueueManager.getInstance().addPlayerToQueueWithCustomPriority(args[0], p, Integer.MAX_VALUE);
-                } catch (QueueNotExistsException e) {
-                    sender.sendMessage(new TextComponent(Config.getInstance().getLabel("queue-non-existent", args[0])));
-                }
+            if(!sender.hasPermission(String.format("smartqueue.unstuck.%s", args[0]))) {
+                sender.sendMessage(new TextComponent(Config.getInstance().getLabel("not-allowed")));
+                return;
+            }
+            if(args.length != 1) {
+                sender.sendMessage(new TextComponent(Config.getInstance().getLabel("unstuck-usage")));
+                return;
+            }
+            try {
+                SmartQueueManager.getInstance().unstuck(args[0]);
+                sender.sendMessage(new TextComponent(Config.getInstance().getLabel("unstucked")));
+            } catch (QueueNotExistsException e) {
+                sender.sendMessage(new TextComponent(Config.getInstance().getLabel("queue-non-existent", args[0])));
             }
         }).start();
     }

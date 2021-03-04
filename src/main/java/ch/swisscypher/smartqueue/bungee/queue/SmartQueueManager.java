@@ -76,7 +76,7 @@ public class SmartQueueManager {
         try {
             sqs.get(name).addPlayer(player);
         } catch (NoPermissionException e) {
-            player.sendMessage(new TextComponent(String.format(Config.getInstance().lang.getConfiguration().getString("cannot-join-queue"), name)));
+            player.sendMessage(new TextComponent(Config.getInstance().getLabel("cannot-join-queue", name)));
         }
     }
 
@@ -145,6 +145,19 @@ public class SmartQueueManager {
         }
 
         return sqs.get(name).isEnabled();
+    }
+
+    public void unstuck(String name) throws QueueNotExistsException {
+        if(!sqs.containsKey(name)) {
+            throw new QueueNotExistsException(name);
+        }
+
+        sqs.get(name).getLock().lock();
+        try {
+            sqs.get(name).getPollable().signal();
+        } finally {
+            sqs.get(name).getLock().unlock();
+        }
     }
 
     public int getAvailableSlot(String name) {

@@ -31,12 +31,16 @@ queues:
 ## Permissions
 SmartQueue uses BungeeCord permissions in order to let the players execute various commands, access queues and define their priority inside queues.
 
+* `smartqueue.join.*`
+  * `smartqueue.join.<queuename>` Allow to execute the `/join <queue>` command that add the player calls it at the last place of the queue. The player can be added to any queue by the API regardless of this permission.
 * `smartqueue.bypass.*`
     * `smartqueue.bypass.<queuename>` Allow to execute the `/bypass <queue>` command that add the player who calls it at the first place of the queue
 * `smartqueue.<queuename>.priority.<integer>` Set the player priority for a given queue and allow him to join it
 * `smartqueue.toggle.*`
     * `smartqueue.toggle.<queuename>` Allow to change the state of a given queue (enabled/disabled)
-
+* `smartqueue.unstuck.*`
+  * `smartqueue.unstuck.<queuename>` Allow to execute the `/unstuck <queue>` command that give a little push to the queue if it's locked
+  
 Warining, the permissions need to be set on the BungeeCord server !
 ## Use SmartQueue API as a dependency
 
@@ -89,7 +93,7 @@ Copyright (C) 2021 Zayceur (contact@zayceur.ch)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License.
+the Free Software Foundation, version 3 of the License.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
