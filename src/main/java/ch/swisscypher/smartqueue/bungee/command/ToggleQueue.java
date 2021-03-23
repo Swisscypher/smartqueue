@@ -34,12 +34,12 @@ public class ToggleQueue extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         new Thread(() -> {
-            if(!sender.hasPermission(String.format("smartqueue.toggle.%s", args[0]))) {
-                sender.sendMessage(new TextComponent(Config.getInstance().getLabel("not-allowed")));
-                return;
-            }
             if(args.length != 1) {
                 sender.sendMessage(new TextComponent(Config.getInstance().getLabel("toggle-usage")));
+                return;
+            }
+            if(!sender.hasPermission(String.format("smartqueue.toggle.%s", args[0]))) {
+                sender.sendMessage(new TextComponent(Config.getInstance().getLabel("not-allowed")));
                 return;
             }
             try {

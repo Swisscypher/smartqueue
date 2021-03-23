@@ -35,12 +35,12 @@ public class BypassQueue extends Command {
     public void execute(CommandSender sender, String[] args) {
         new Thread(() -> {
             if ((sender instanceof ProxiedPlayer)) {
-                if(!sender.hasPermission(String.format("smartqueue.bypass.%s", args[0]))) {
-                    sender.sendMessage(new TextComponent(Config.getInstance().getLabel("not-allowed")));
-                    return;
-                }
                 if(args.length != 1) {
                     sender.sendMessage(new TextComponent(Config.getInstance().getLabel("bypass-usage")));
+                    return;
+                }
+                if(!sender.hasPermission(String.format("smartqueue.bypass.%s", args[0]))) {
+                    sender.sendMessage(new TextComponent(Config.getInstance().getLabel("not-allowed")));
                     return;
                 }
                 ProxiedPlayer p = (ProxiedPlayer) sender;
