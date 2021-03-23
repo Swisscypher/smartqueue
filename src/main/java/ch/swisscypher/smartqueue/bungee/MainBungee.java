@@ -27,6 +27,8 @@ import ch.swisscypher.smartqueue.common.util.LicenseManager;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginDescription;
+import org.bstats.bungeecord.Metrics;
+import org.bstats.charts.SimplePie;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -65,6 +67,8 @@ public class MainBungee extends Plugin {
         getProxy().getPluginManager().registerListener(this, new PlayerEvent());
         getProxy().getPluginManager().registerListener(this, new MessageEvent());
         getProxy().registerChannel(Channel.METHODS);
+
+        new Metrics(this, 10332);
     }
 
     @Override
