@@ -43,7 +43,7 @@ public class UnstuckQueue extends Command {
             }
             try {
                 SmartQueueManager.getInstance().unstuck(args[0]);
-                sender.sendMessage(new TextComponent(Config.getInstance().getLabel("unstucked")));
+                sender.sendMessage(new TextComponent(Config.getInstance().getLabel("unstucked", args[0])));
             } catch (QueueNotExistsException e) {
                 sender.sendMessage(new TextComponent(Config.getInstance().getLabel("queue-non-existent", args[0])));
             }
