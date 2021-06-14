@@ -3,6 +3,7 @@ plugins {
     id 'java'
     id 'org.cadixdev.licenser' version '0.6.1'
     id 'com.github.breadmoirai.github-release' version '2.2.12'
+    id 'org.sonarqube' version '3.3'
 }
 
 group 'ch.swisscypher.smartqueue'
@@ -10,16 +11,16 @@ group 'ch.swisscypher.smartqueue'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-apply plugin: "org.cadixdev.licenser"
-apply plugin: "com.github.breadmoirai.github-release"
+apply plugin: 'org.cadixdev.licenser'
+apply plugin: 'com.github.breadmoirai.github-release'
 
 compileJava {
     dependsOn checkLicenses
 }
 
 license {
-    header = project.file("HEADER")
-    include("**/*.java")
+    header = project.file('HEADER')
+    include('**/*.java')
 
     newLine = true
 }
@@ -31,14 +32,14 @@ def determineVersion = {
         commandLine 'git', 'describe', '--tags', '--first-parent', '--always'
         standardOutput = version
     }
-    version = version.toString().replaceAll("\\s", "").replaceAll("^v", "")
+    version = version.toString().replaceAll('\\s', '').replaceAll('^v', '')
 
     try {
         exec {
-            commandLine("git", "diff", "--exit-code", "--quiet")
+            commandLine('git', 'diff', '--exit-code', '--quiet')
         }
     } catch (ignored) {
-        return "${version}.dirty"
+        return '${version}.dirty'
     }
 
     return version
@@ -53,7 +54,7 @@ jar {
 
 repositories {
     mavenCentral()
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url 'https://jitpack.io' }
 }
@@ -85,7 +86,7 @@ processResources {
 }
 
 shadowJar {
-    from("LICENSE")
+    from('LICENSE')
     archiveBaseName = 'SmartQueue'
 
     relocate 'org.bstats', 'ch.swisscypher.bstats'
@@ -93,8 +94,16 @@ shadowJar {
 
 tasks {
     githubRelease {
-        token System.getenv("GITHUB_TOKEN").toString()
-        owner "swisscypher"
+        token System.getenv('GITHUB_TOKEN').toString()
+        owner 'swisscypher'
         releaseAssets shadowJar.archiveFile
     }
+}
+
+sonarqube {
+  properties {
+    property 'sonar.projectKey', 'Swisscypher_smartqueue'
+    property 'sonar.organization', 'swisscypher'
+    property 'sonar.host.url', 'https://sonarcloud.io'
+  }
 }
