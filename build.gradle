@@ -87,6 +87,8 @@ processResources {
 shadowJar {
     from("LICENSE")
     archiveBaseName = 'SmartQueue'
+
+    relocate 'org.bstats', 'ch.swisscypher.bstats'
 }
 
 tasks {
