@@ -47,6 +47,7 @@ def determineVersion = {
 version = determineVersion()
 
 jar {
+    dependsOn shadowJar
     from("LICENSE")
 }
 
@@ -58,7 +59,9 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'ch.swisscypher', name: 'smartqueue-api', version: 'v1.1.4'
+    implementation group: 'ch.swisscypher', name: 'smartqueue-api', version: 'v1.1.4c'
+    implementation group: 'org.bstats', name: 'bstats-bukkit', version: '2.2.1'
+    implementation group: 'org.bstats', name: 'bstats-bungeecord', version: '2.2.1'
 
     compileOnly group: 'net.md-5', name: 'bungeecord-api', version: '1.16-R0.3'
     compileOnly group: 'org.spigotmc', name:'spigot-api', version:'1.12.2-R0.1-SNAPSHOT'
@@ -84,6 +87,8 @@ processResources {
 shadowJar {
     from("LICENSE")
     archiveBaseName = 'SmartQueue'
+
+    relocate 'org.bstats', 'ch.swisscypher.bstats'
 }
 
 tasks {
