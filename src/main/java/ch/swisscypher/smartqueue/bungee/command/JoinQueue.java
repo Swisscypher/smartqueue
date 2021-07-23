@@ -17,6 +17,7 @@
 
 package ch.swisscypher.smartqueue.bungee.command;
 
+import ch.swisscypher.smartqueue.bungee.MainBungee;
 import ch.swisscypher.smartqueue.bungee.config.Config;
 import ch.swisscypher.smartqueue.bungee.exception.QueueNotExistsException;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueManager;
@@ -33,7 +34,7 @@ public class JoinQueue extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        new Thread(() -> {
+        MainBungee.getInstance().getThreadPool().execute(() -> {
             if ((sender instanceof ProxiedPlayer)) {
                 if(args.length != 1) {
                     sender.sendMessage(new TextComponent(Config.getInstance().getLabel("join-usage")));
@@ -50,6 +51,6 @@ public class JoinQueue extends Command {
                     sender.sendMessage(new TextComponent(Config.getInstance().getLabel("queue-non-existent", args[0])));
                 }
             }
-        }).start();
+        });
     }
 }

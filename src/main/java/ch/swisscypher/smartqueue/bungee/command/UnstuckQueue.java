@@ -17,6 +17,7 @@
 
 package ch.swisscypher.smartqueue.bungee.command;
 
+import ch.swisscypher.smartqueue.bungee.MainBungee;
 import ch.swisscypher.smartqueue.bungee.config.Config;
 import ch.swisscypher.smartqueue.bungee.exception.QueueNotExistsException;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueManager;
@@ -32,7 +33,7 @@ public class UnstuckQueue extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        new Thread(() -> {
+        MainBungee.getInstance().getThreadPool().execute(() -> {
             if(args.length != 1) {
                 sender.sendMessage(new TextComponent(Config.getInstance().getLabel("unstuck-usage")));
                 return;
@@ -47,6 +48,6 @@ public class UnstuckQueue extends Command {
             } catch (QueueNotExistsException e) {
                 sender.sendMessage(new TextComponent(Config.getInstance().getLabel("queue-non-existent", args[0])));
             }
-        }).start();
+        });
     }
 }

@@ -28,8 +28,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainSpigot extends JavaPlugin {
+
+    private ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     private static MainSpigot instance;
 
@@ -56,5 +60,9 @@ public class MainSpigot extends JavaPlugin {
 
     public static MainSpigot getInstance() {
         return instance;
+    }
+
+    public ExecutorService getThreadPool() {
+        return threadPool;
     }
 }
