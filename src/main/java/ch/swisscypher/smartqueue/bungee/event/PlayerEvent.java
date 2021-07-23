@@ -17,6 +17,7 @@
 
 package ch.swisscypher.smartqueue.bungee.event;
 
+import ch.swisscypher.smartqueue.bungee.MainBungee;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueManager;
 import net.md_5.bungee.api.event.ServerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -26,7 +27,7 @@ public class PlayerEvent implements Listener {
 
     @EventHandler
     public void onPlayerLeave(ServerDisconnectEvent e) {
-        new Thread(() -> {
+        MainBungee.getInstance().getThreadPool().execute(() -> {
             try {
                 Thread.sleep(100);  // Waiting on bungee to update the values
             } catch (InterruptedException e1) {
@@ -34,6 +35,6 @@ public class PlayerEvent implements Listener {
             }
             SmartQueueManager.getInstance().playerSwitchServer(e.getTarget());
             SmartQueueManager.getInstance().removePlayerFromAllQueue(e.getPlayer());
-        }).start();
+        });
     }
 }

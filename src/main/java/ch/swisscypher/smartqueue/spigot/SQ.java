@@ -69,7 +69,7 @@ public class SQ extends SmartQueue {
 
         CompletableFuture<Optional<Boolean>> c = new CompletableFuture<>();
 
-        Executors.newSingleThreadExecutor().submit(() -> {
+        MainSpigot.getInstance().getThreadPool().execute(() -> {
             c.complete(Optional.ofNullable(returnMethod("getQueueStatus", queue)));
         });
 
@@ -81,7 +81,7 @@ public class SQ extends SmartQueue {
 
         CompletableFuture<Boolean> c = new CompletableFuture<>();
 
-        Executors.newSingleThreadExecutor().submit(() -> {
+        MainSpigot.getInstance().getThreadPool().execute(() -> {
             c.complete(returnMethod("isPlayerInQueue", player.getUniqueId(), queue));
         });
 
@@ -93,7 +93,7 @@ public class SQ extends SmartQueue {
 
         CompletableFuture<Optional<Long>> c = new CompletableFuture<>();
 
-        Executors.newSingleThreadExecutor().submit(() -> {
+        MainSpigot.getInstance().getThreadPool().execute(() -> {
             c.complete(Optional.ofNullable(returnMethod("getPlayerPositionInQueue", player.getUniqueId(), queue)));
         });
 
@@ -105,7 +105,7 @@ public class SQ extends SmartQueue {
 
         CompletableFuture<Optional<List<OfflinePlayer>>> c = new CompletableFuture<>();
 
-        Executors.newSingleThreadExecutor().submit(() -> {
+        MainSpigot.getInstance().getThreadPool().execute(() -> {
 
             List<UUID> uuids = returnMethod("getPlayersInQueue", queue);
 

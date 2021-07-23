@@ -17,6 +17,7 @@
 
 package ch.swisscypher.smartqueue.spigot;
 
+import ch.swisscypher.smartqueue.bungee.MainBungee;
 import ch.swisscypher.smartqueue.common.constant.Channel;
 import ch.swisscypher.smartqueue.common.struct.Message;
 import ch.swisscypher.smartqueue.common.util.ByteSerializer;
@@ -59,10 +60,10 @@ public class MessageManager implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        new Thread(() -> {
+        MainSpigot.getInstance().getThreadPool().execute(() -> {
             if(channel.equals(Channel.METHODS)) {
                 accept(ByteSerializer.fromByte(message));
             }
-        }).start();
+        });
     }
 }

@@ -28,7 +28,12 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginDescription;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class MainBungee extends Plugin {
+
+    private ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     private static MainBungee instance;
 
@@ -65,5 +70,9 @@ public class MainBungee extends Plugin {
     @Override
     public void onDisable() {
         SmartQueueManager.getInstance().stop();
+    }
+
+    public ExecutorService getThreadPool() {
+        return threadPool;
     }
 }
