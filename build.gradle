@@ -47,6 +47,7 @@ def determineVersion = {
 version = determineVersion()
 
 jar {
+    dependsOn shadowJar
     from("LICENSE")
 }
 
