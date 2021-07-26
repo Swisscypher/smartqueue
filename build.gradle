@@ -1,6 +1,7 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
     id 'java'
+    id 'jacoco'
     id 'org.cadixdev.licenser' version '0.6.1'
     id 'com.github.breadmoirai.github-release' version '2.2.12'
     id 'org.sonarqube' version '3.3'
@@ -98,6 +99,12 @@ tasks {
         owner 'swisscypher'
         releaseAssets shadowJar.archiveFile
     }
+}
+
+jacocoTestReport {
+  reports {
+    xml.enabled true
+  }
 }
 
 sonarqube {
