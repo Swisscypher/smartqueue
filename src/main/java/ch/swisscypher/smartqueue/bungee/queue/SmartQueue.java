@@ -112,7 +112,7 @@ public class SmartQueue {
 
     private void updateRanking() {
         AtomicInteger pos = new AtomicInteger(1);
-        internalQueue.stream().forEachOrdered(sqe -> sqe.setPosition(pos.getAndIncrement()));
+        internalQueue.forEach(sqe -> sqe.setPosition(pos.getAndIncrement()));
         internalQueue.parallelStream().forEach(sqe -> {
             sqe.getEntry().sendMessage(
                     ChatMessageType.ACTION_BAR,

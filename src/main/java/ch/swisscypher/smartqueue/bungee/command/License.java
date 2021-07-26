@@ -40,12 +40,12 @@ public class License extends Command {
 
             switch (args[0]) {
                 case "c":
-                    Arrays.stream(LicenseManager.REDISTRIBUTE_CONDITIONS.split("\n")).forEachOrdered(
+                    Arrays.asList(LicenseManager.REDISTRIBUTE_CONDITIONS.split("\n")).forEach(
                             m -> sender.sendMessage(new TextComponent(m))
                     );
                     break;
                 case "w":
-                    Arrays.stream(LicenseManager.WARRANTY.split("\n")).forEachOrdered(
+                    Arrays.asList(LicenseManager.WARRANTY.split("\n")).forEach(
                             m -> sender.sendMessage(new TextComponent(m))
                     );
                     break;
