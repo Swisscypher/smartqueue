@@ -17,39 +17,84 @@
 
 package ch.swisscypher.smartqueue.bungee.test;
 
+import ch.swisscypher.smartqueue.bungee.config.Config;
+import ch.swisscypher.smartqueue.bungee.exception.QueueNotExistsException;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueue;
+import ch.swisscypher.smartqueue.bungee.queue.SmartQueueEntry;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueManager;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import net.md_5.bungee.api.Callback;
+import net.md_5.bungee.api.ServerPing;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import org.junit.jupiter.api.*;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.awt.*;
 import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class TestSmartQueueManager {
     private final SmartQueueManager manager = SmartQueueManager.getInstance();
 
-    private final Random random = new Random();
-    private static ServerInfo info = Mockito.mock(ServerInfo.class);
+    private static final Random random = new Random();
+
+    private static final ServerPing ping = new ServerPing();
+    private static final Config config = Mockito.mock(Config.class);
+    private static final ProxiedPlayer player = Mockito.mock(ProxiedPlayer.class);
+    private static final ServerInfo info = Mockito.mock(ServerInfo.class);
+    private static final Server server = Mockito.mock(Server.class);
+
+    private static final String name = UUID.randomUUID().toString();
+    private static final ServerInfo destination = Mockito.mock(ServerInfo.class);
+    private static final int waiting = random.nextInt(1000);
+    private static final boolean needPriority = true;
+
+    private static final int priority = random.nextInt(10);
 
     @BeforeAll
     static void init() {
         // TODO: Fix InterruptException when SmartQueue#getAvailableSlots is called.
 
-        Mockito.doAnswer(invocation -> {
-            Callback<?> argumentAt = invocation.getArgumentAt(0, Callback.class);
+        ping.setPlayers(new ServerPing.Players(10, 5 + random.nextInt(5), new ServerPing.PlayerInfo[0]));
 
-            argumentAt.done(null, new Exception());
+        Mockito.doReturn(info).when(server).getInfo();
+        Mockito.doReturn(server).when(player).getServer();
+        Mockito.doReturn(Collections.singletonList("smartqueue." + name + ".priority." + priority)).when(player).getPermissions();
+
+        Mockito.doAnswer(invocation -> {
+            Callback<ServerPing> argumentAt = invocation.getArgumentAt(0, Callback.class);
+
+            argumentAt.done(ping, null);
             return null;
-        }).when(info).ping(Mockito.any());
+        }).when(destination).ping(Mockito.any());
+
+        Mockito.doAnswer(invocation -> {
+            Callback<Boolean> argumentAt = invocation.getArgumentAt(1, Callback.class);
+
+            argumentAt.done(true, null);
+            return null;
+        }).when(player).connect(Mockito.any(ServerInfo.class), Mockito.any(Callback.class));
+
+        Mockito.doReturn("").when(config).getLabel(Mockito.anyString());
+
+        try {
+            Field instance = Config.class.getDeclaredField("instance");
+
+            instance.setAccessible(true);
+            instance.set(null, config);
+            instance.setAccessible(false);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @BeforeEach
     void initTest() {
-        manager.createSmartQueue("test", info, random.nextInt(1000), random.nextBoolean());
+        manager.createSmartQueue(name, destination, waiting, needPriority);
     }
 
     @AfterEach
@@ -59,20 +104,6 @@ public class TestSmartQueueManager {
 
     @Test
     public void testCreateSmartQueue() {
-        String name = UUID.randomUUID().toString();
-        ServerInfo destination = Mockito.mock(ServerInfo.class);
-        int waiting = random.nextInt(1000);
-        boolean needPriority = random.nextBoolean();
-
-        Mockito.doAnswer(invocation -> {
-            Callback<?> argumentAt = invocation.getArgumentAt(0, Callback.class);
-
-            argumentAt.done(null, new Exception());
-            return null;
-        }).when(destination).ping(Mockito.any());
-
-        manager.createSmartQueue(name, destination, waiting, needPriority);
-
         try {
             Field sqsField = SmartQueueManager.class.getDeclaredField("sqs");
 
@@ -128,5 +159,78 @@ public class TestSmartQueueManager {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             Assertions.fail(e);
         }
+    }
+
+    @Test
+    public void testAddPlayerToQueueWithCustomPriority() {
+        int priority = random.nextInt(100);
+
+        try {
+            manager.addPlayerToQueueWithCustomPriority(name, player, priority);
+
+            Field sqsField = SmartQueueManager.class.getDeclaredField("sqs");
+
+            sqsField.setAccessible(true);
+            Map<String, SmartQueue> sqs = (Map<String, SmartQueue>) sqsField.get(manager);
+            sqsField.setAccessible(false);
+
+            SmartQueue queue = sqs.get(name);
+            Field internalQueueField = SmartQueue.class.getDeclaredField("entries");
+
+            internalQueueField.setAccessible(true);
+            HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>> internalQueue = (HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>>) internalQueueField.get(queue);
+            internalQueueField.setAccessible(false);
+
+            Field priorityField = SmartQueueEntry.class.getDeclaredField("priority");
+
+            priorityField.setAccessible(true);
+            long internalPriority = (long) priorityField.get(internalQueue.get(player));
+            priorityField.setAccessible(false);
+
+            Assertions.assertEquals(priority, internalPriority);
+        } catch (QueueNotExistsException | NoSuchFieldException | IllegalAccessException e) {
+            Assertions.fail(e);
+        }
+
+        Assertions.assertThrows(QueueNotExistsException.class, () -> manager.addPlayerToQueueWithCustomPriority(UUID.randomUUID().toString(), player, priority));
+    }
+
+    @Test
+    public void testAddPlayerToQueue() {
+        try {
+            manager.addPlayerToQueue(name, player);
+            Field sqsField = SmartQueueManager.class.getDeclaredField("sqs");
+
+            sqsField.setAccessible(true);
+            Map<String, SmartQueue> sqs = (Map<String, SmartQueue>) sqsField.get(manager);
+            sqsField.setAccessible(false);
+
+            SmartQueue queue = sqs.get(name);
+            Field internalQueueField = SmartQueue.class.getDeclaredField("entries");
+
+            internalQueueField.setAccessible(true);
+            HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>> internalQueue = (HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>>) internalQueueField.get(queue);
+            internalQueueField.setAccessible(false);
+
+            Field priorityField = SmartQueueEntry.class.getDeclaredField("priority");
+
+            priorityField.setAccessible(true);
+            long internalPriority = (long) priorityField.get(internalQueue.get(player));
+            priorityField.setAccessible(false);
+
+            ProxiedPlayer anotherPlayer = Mockito.mock(ProxiedPlayer.class);
+            Mockito.doReturn(server).when(anotherPlayer).getServer();
+            Mockito.doReturn(Collections.emptyList()).when(anotherPlayer).getPermissions();
+
+            manager.addPlayerToQueue(name, anotherPlayer);
+
+            Mockito.verify(anotherPlayer).sendMessage(Mockito.any(BaseComponent.class));
+
+            Assertions.assertEquals(priority, internalPriority);
+        } catch (QueueNotExistsException | NoSuchFieldException | IllegalAccessException e) {
+            Assertions.fail(e);
+        }
+
+        Assertions.assertThrows(QueueNotExistsException.class, () -> manager.addPlayerToQueue(UUID.randomUUID().toString(), player));
     }
 }
