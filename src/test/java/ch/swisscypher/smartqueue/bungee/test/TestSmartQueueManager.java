@@ -22,7 +22,6 @@ import ch.swisscypher.smartqueue.bungee.exception.QueueNotExistsException;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueue;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueEntry;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueManager;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -30,10 +29,8 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -232,5 +229,17 @@ public class TestSmartQueueManager {
         }
 
         Assertions.assertThrows(QueueNotExistsException.class, () -> manager.addPlayerToQueue(UUID.randomUUID().toString(), player));
+    }
+
+    @Test
+    public void testIsPlayerInQueue() {
+        try {
+            manager.addPlayerToQueue(name, player);
+            Assertions.assertTrue(manager.isPlayerInQueue(name, player));
+            Assertions.assertFalse(manager.isPlayerInQueue(name, Mockito.mock(ProxiedPlayer.class)));
+            Assertions.assertFalse(manager.isPlayerInQueue(UUID.randomUUID().toString(), player));
+        } catch (QueueNotExistsException e) {
+            Assertions.fail(e);
+        }
     }
 }
