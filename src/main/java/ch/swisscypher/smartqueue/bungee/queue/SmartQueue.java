@@ -223,8 +223,7 @@ public class SmartQueue {
     }
 
     synchronized public ArrayList<UUID> getPlayers() {
-        new ArrayList<>(internalQueue);
-        return new ArrayList<>(entries.keySet().stream().map(p -> p.getUniqueId()).collect(Collectors.toList()));
+        return entries.keySet().stream().map(ProxiedPlayer::getUniqueId).collect(Collectors.toCollection(ArrayList::new));
     }
 
     Runnable process = () -> {
