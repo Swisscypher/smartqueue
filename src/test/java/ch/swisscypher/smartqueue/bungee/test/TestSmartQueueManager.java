@@ -18,6 +18,7 @@
 package ch.swisscypher.smartqueue.bungee.test;
 
 import ch.swisscypher.smartqueue.bungee.config.Config;
+import ch.swisscypher.smartqueue.bungee.exception.PlayerNotInQueueException;
 import ch.swisscypher.smartqueue.bungee.exception.QueueNotExistsException;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueue;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueEntry;
@@ -238,6 +239,44 @@ public class TestSmartQueueManager {
             Assertions.assertTrue(manager.isPlayerInQueue(name, player));
             Assertions.assertFalse(manager.isPlayerInQueue(name, Mockito.mock(ProxiedPlayer.class)));
             Assertions.assertFalse(manager.isPlayerInQueue(UUID.randomUUID().toString(), player));
+        } catch (QueueNotExistsException e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
+    public void testRemovePlayerFromQueue() {
+        try {
+            manager.setEnabled(name, false);
+
+            manager.addPlayerToQueue(name, player);
+            Assertions.assertDoesNotThrow(() -> manager.getPlayerPositionInQueue(name, player));
+
+            manager.removePlayerFromQueue(name, player);
+            Assertions.assertThrows(PlayerNotInQueueException.class, () -> manager.getPlayerPositionInQueue(name, player));
+        } catch (QueueNotExistsException e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
+    public void testRemovePlayerFromAllQueue() {
+        manager.createSmartQueue("test", Mockito.mock(ServerInfo.class), waiting, false);
+
+        try {
+            manager.setEnabled(name, false);
+            manager.setEnabled("test", false);
+
+            manager.addPlayerToQueue(name, player);
+            manager.addPlayerToQueue("test", player);
+
+            Assertions.assertDoesNotThrow(() -> manager.getPlayerPositionInQueue(name, player));
+            Assertions.assertDoesNotThrow(() -> manager.getPlayerPositionInQueue("test", player));
+
+            manager.removePlayerFromAllQueue(player);
+
+            Assertions.assertThrows(PlayerNotInQueueException.class, () -> manager.getPlayerPositionInQueue(name, player));
+            Assertions.assertThrows(PlayerNotInQueueException.class, () -> manager.getPlayerPositionInQueue("test", player));
         } catch (QueueNotExistsException e) {
             Assertions.fail(e);
         }
