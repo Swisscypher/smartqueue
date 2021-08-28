@@ -112,7 +112,7 @@ public class SmartQueue {
 
     private void updateRanking() {
         AtomicInteger pos = new AtomicInteger(1);
-        internalQueue.stream().forEachOrdered(sqe -> sqe.setPosition(pos.getAndIncrement()));
+        internalQueue.forEach(sqe -> sqe.setPosition(pos.getAndIncrement()));
         internalQueue.parallelStream().forEach(sqe -> {
             sqe.getEntry().sendMessage(
                     ChatMessageType.ACTION_BAR,
@@ -223,8 +223,7 @@ public class SmartQueue {
     }
 
     synchronized public ArrayList<UUID> getPlayers() {
-        new ArrayList<>(internalQueue);
-        return new ArrayList<>(entries.keySet().stream().map(p -> p.getUniqueId()).collect(Collectors.toList()));
+        return entries.keySet().stream().map(ProxiedPlayer::getUniqueId).collect(Collectors.toCollection(ArrayList::new));
     }
 
     Runnable process = () -> {

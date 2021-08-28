@@ -34,10 +34,10 @@ public class LicenseCommand implements CommandExecutor {
 
         switch (args[0]) {
             case "c":
-                Arrays.stream(LicenseManager.REDISTRIBUTE_CONDITIONS.split("\n")).forEachOrdered(sender::sendMessage);
+                Arrays.asList(LicenseManager.REDISTRIBUTE_CONDITIONS.split("\n")).forEach(sender::sendMessage);
                 return true;
             case "w":
-                Arrays.stream(LicenseManager.WARRANTY.split("\n")).forEachOrdered(sender::sendMessage);
+                Arrays.asList(LicenseManager.WARRANTY.split("\n")).forEach(sender::sendMessage);
                 return true;
         }
 
