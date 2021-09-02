@@ -21,12 +21,14 @@ import ch.swisscypher.smartqueue.bungee.config.Config;
 import ch.swisscypher.smartqueue.bungee.exception.NoPermissionException;
 import ch.swisscypher.smartqueue.bungee.exception.PlayerNotInQueueException;
 import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -98,7 +100,7 @@ public class SmartQueue {
         });
 
         try {
-            sem.acquire();
+            sem.tryAcquire(ProxyServer.getInstance().getConfig().getRemotePingTimeout(), TimeUnit.MILLISECONDS);
             return res.get();
         } catch (InterruptedException e) {
             e.printStackTrace();
