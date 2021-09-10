@@ -24,30 +24,44 @@ import ch.swisscypher.smartqueue.bungee.queue.SmartQueue;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueEntry;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueManager;
 import net.md_5.bungee.api.Callback;
+import net.md_5.bungee.api.ProxyConfig;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.*;
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ ProxyServer.class })
 public class TestSmartQueueManager {
     private final SmartQueueManager manager = SmartQueueManager.getInstance();
 
     private static final Random random = new Random();
 
+    private static final ProxyServer proxyServer = mock(ProxyServer.class);
+    private static final ProxyConfig proxyConfig = mock(ProxyConfig.class);
+
     private static final ServerPing ping = new ServerPing();
-    private static final Config config = Mockito.mock(Config.class);
-    private static final ProxiedPlayer player = Mockito.mock(ProxiedPlayer.class);
-    private static final ServerInfo info = Mockito.mock(ServerInfo.class);
-    private static final Server server = Mockito.mock(Server.class);
+    private static final Config config = mock(Config.class);
+    private static final ProxiedPlayer player = mock(ProxiedPlayer.class);
+    private static final ServerInfo info = mock(ServerInfo.class);
+    private static final Server server = mock(Server.class);
 
     private static final String name = UUID.randomUUID().toString();
-    private static final ServerInfo destination = Mockito.mock(ServerInfo.class);
+    private static final ServerInfo destination = mock(ServerInfo.class);
     private static final int waiting = random.nextInt(1000);
     private static final boolean needPriority = true;
 
@@ -57,37 +71,34 @@ public class TestSmartQueueManager {
     static void init() {
         // TODO: Fix InterruptException when SmartQueue#getAvailableSlots is called.
 
+        doReturn(5000).when(proxyConfig).getRemotePingTimeout();
+        doReturn(5000).when(proxyConfig).getServerConnectTimeout();
+        doReturn(proxyConfig).when(proxyServer).getConfig();
+
+        Whitebox.setInternalState(ProxyServer.class, "instance", proxyServer);
+
         ping.setPlayers(new ServerPing.Players(10, 5 + random.nextInt(5), new ServerPing.PlayerInfo[0]));
 
-        Mockito.doReturn(info).when(server).getInfo();
-        Mockito.doReturn(server).when(player).getServer();
-        Mockito.doReturn(Collections.singletonList("smartqueue." + name + ".priority." + priority)).when(player).getPermissions();
+        doReturn(info).when(server).getInfo();
+        doReturn(server).when(player).getServer();
+        doReturn(Collections.singletonList("smartqueue." + name + ".priority." + priority)).when(player).getPermissions();
 
-        Mockito.doAnswer(invocation -> {
-            Callback<ServerPing> argumentAt = invocation.getArgumentAt(0, Callback.class);
+        doAnswer(invocation -> {
+            Callback<ServerPing> argumentAt = invocation.getArgument(0, Callback.class);
 
             argumentAt.done(ping, null);
             return null;
-        }).when(destination).ping(Mockito.any());
+        }).when(destination).ping(any());
 
-        Mockito.doAnswer(invocation -> {
-            Callback<Boolean> argumentAt = invocation.getArgumentAt(1, Callback.class);
+        doAnswer(invocation -> {
+            Callback<Boolean> argumentAt = invocation.getArgument(1, Callback.class);
 
             argumentAt.done(true, null);
             return null;
-        }).when(player).connect(Mockito.any(ServerInfo.class), Mockito.any(Callback.class));
+        }).when(player).connect(any(ServerInfo.class), any(Callback.class));
+        doReturn("").when(config).getLabel(anyString());
 
-        Mockito.doReturn("").when(config).getLabel(Mockito.anyString());
-
-        try {
-            Field instance = Config.class.getDeclaredField("instance");
-
-            instance.setAccessible(true);
-            instance.set(null, config);
-            instance.setAccessible(false);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        Whitebox.setInternalState(Config.class, "instance", config);
     }
 
     @BeforeEach
@@ -102,61 +113,30 @@ public class TestSmartQueueManager {
 
     @Test
     public void testCreateSmartQueue() {
-        try {
-            Field sqsField = SmartQueueManager.class.getDeclaredField("sqs");
+        Map<String, SmartQueue> sqs = Whitebox.getInternalState(manager, "sqs");
 
-            sqsField.setAccessible(true);
-            Map<String, SmartQueue> sqs = (Map<String, SmartQueue>) sqsField.get(manager);
-            sqsField.setAccessible(false);
+        SmartQueue queue = sqs.get(name);
 
-            SmartQueue queue = sqs.get(name);
+        String queueName = Whitebox.getInternalState(queue, "name");
+        ServerInfo queueDestination = queue.getDestination();
+        int queueWaiting = Whitebox.getInternalState(queue, "waiting");
+        boolean queueNeedPriority = Whitebox.getInternalState(queue, "needPriority");
 
-            Field nameField = SmartQueue.class.getDeclaredField("name");
-            Field waitingField = SmartQueue.class.getDeclaredField("waiting");
-            Field needPriorityField = SmartQueue.class.getDeclaredField("needPriority");
-
-            nameField.setAccessible(true);
-            waitingField.setAccessible(true);
-            needPriorityField.setAccessible(true);
-
-            String queueName = (String) nameField.get(queue);
-            ServerInfo queueDestination = queue.getDestination();
-            int queueWaiting = (int) waitingField.get(queue);
-            boolean queueNeedPriority = (boolean) needPriorityField.get(queue);
-
-            nameField.setAccessible(false);
-            waitingField.setAccessible(false);
-            needPriorityField.setAccessible(false);
-
-            Assertions.assertEquals(name, queueName);
-            Assertions.assertEquals(destination, queueDestination);
-            Assertions.assertEquals(waiting, queueWaiting);
-            Assertions.assertEquals(needPriority, queueNeedPriority);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            Assertions.fail(e);
-        }
+        Assertions.assertEquals(name, queueName);
+        Assertions.assertEquals(destination, queueDestination);
+        Assertions.assertEquals(waiting, queueWaiting);
+        Assertions.assertEquals(needPriority, queueNeedPriority);
     }
 
     @Test
     public void testDestroyAll() {
         manager.destroyAll();
 
-        try {
-            Field sqsField = SmartQueueManager.class.getDeclaredField("sqs");
-            Field sisField = SmartQueueManager.class.getDeclaredField("sis");
+        Map<String, SmartQueue> sqs = Whitebox.getInternalState(manager, "sqs");
+        Map<ServerInfo, SmartQueue> sis = Whitebox.getInternalState(manager, "sis");
 
-            sqsField.setAccessible(true);
-            sisField.setAccessible(true);
-            Map<String, SmartQueue> sqs = (Map<String, SmartQueue>) sqsField.get(manager);
-            Map<ServerInfo, SmartQueue> sis = (Map<ServerInfo, SmartQueue>) sqsField.get(manager);
-            sisField.setAccessible(false);
-            sqsField.setAccessible(false);
-
-            Assertions.assertTrue(sqs.isEmpty());
-            Assertions.assertTrue(sis.isEmpty());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            Assertions.fail(e);
-        }
+        Assertions.assertTrue(sqs.isEmpty());
+        Assertions.assertTrue(sis.isEmpty());
     }
 
     @Test
@@ -166,27 +146,14 @@ public class TestSmartQueueManager {
         try {
             manager.addPlayerToQueueWithCustomPriority(name, player, priority);
 
-            Field sqsField = SmartQueueManager.class.getDeclaredField("sqs");
-
-            sqsField.setAccessible(true);
-            Map<String, SmartQueue> sqs = (Map<String, SmartQueue>) sqsField.get(manager);
-            sqsField.setAccessible(false);
-
+            HashMap<String, SmartQueue> sqs = Whitebox.getInternalState(manager, "sqs");
             SmartQueue queue = sqs.get(name);
-            Field internalQueueField = SmartQueue.class.getDeclaredField("entries");
 
-            internalQueueField.setAccessible(true);
-            HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>> internalQueue = (HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>>) internalQueueField.get(queue);
-            internalQueueField.setAccessible(false);
-
-            Field priorityField = SmartQueueEntry.class.getDeclaredField("priority");
-
-            priorityField.setAccessible(true);
-            long internalPriority = (long) priorityField.get(internalQueue.get(player));
-            priorityField.setAccessible(false);
+            HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>> entries = Whitebox.getInternalState(queue, "entries");
+            long internalPriority = Whitebox.getInternalState(entries.get(player), "priority");
 
             Assertions.assertEquals(priority, internalPriority);
-        } catch (QueueNotExistsException | NoSuchFieldException | IllegalAccessException e) {
+        } catch (QueueNotExistsException e) {
             Assertions.fail(e);
         }
 
@@ -197,35 +164,23 @@ public class TestSmartQueueManager {
     public void testAddPlayerToQueue() {
         try {
             manager.addPlayerToQueue(name, player);
-            Field sqsField = SmartQueueManager.class.getDeclaredField("sqs");
 
-            sqsField.setAccessible(true);
-            Map<String, SmartQueue> sqs = (Map<String, SmartQueue>) sqsField.get(manager);
-            sqsField.setAccessible(false);
-
+            Map<String, SmartQueue> sqs = Whitebox.getInternalState(manager, "sqs");
             SmartQueue queue = sqs.get(name);
-            Field internalQueueField = SmartQueue.class.getDeclaredField("entries");
 
-            internalQueueField.setAccessible(true);
-            HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>> internalQueue = (HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>>) internalQueueField.get(queue);
-            internalQueueField.setAccessible(false);
+            HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>> entries = Whitebox.getInternalState(queue, "entries");
 
-            Field priorityField = SmartQueueEntry.class.getDeclaredField("priority");
+            long internalPriority = Whitebox.getInternalState(entries.get(player), "priority");
 
-            priorityField.setAccessible(true);
-            long internalPriority = (long) priorityField.get(internalQueue.get(player));
-            priorityField.setAccessible(false);
-
-            ProxiedPlayer anotherPlayer = Mockito.mock(ProxiedPlayer.class);
-            Mockito.doReturn(server).when(anotherPlayer).getServer();
-            Mockito.doReturn(Collections.emptyList()).when(anotherPlayer).getPermissions();
+            ProxiedPlayer anotherPlayer = mock(ProxiedPlayer.class);
+            doReturn(server).when(anotherPlayer).getServer();
+            doReturn(Collections.emptyList()).when(anotherPlayer).getPermissions();
 
             manager.addPlayerToQueue(name, anotherPlayer);
 
-            Mockito.verify(anotherPlayer).sendMessage(Mockito.any(BaseComponent.class));
-
+            verify(anotherPlayer).sendMessage(any(BaseComponent.class));
             Assertions.assertEquals(priority, internalPriority);
-        } catch (QueueNotExistsException | NoSuchFieldException | IllegalAccessException e) {
+        } catch (QueueNotExistsException e) {
             Assertions.fail(e);
         }
 
@@ -236,8 +191,9 @@ public class TestSmartQueueManager {
     public void testIsPlayerInQueue() {
         try {
             manager.addPlayerToQueue(name, player);
+
             Assertions.assertTrue(manager.isPlayerInQueue(name, player));
-            Assertions.assertFalse(manager.isPlayerInQueue(name, Mockito.mock(ProxiedPlayer.class)));
+            Assertions.assertFalse(manager.isPlayerInQueue(name, mock(ProxiedPlayer.class)));
             Assertions.assertFalse(manager.isPlayerInQueue(UUID.randomUUID().toString(), player));
         } catch (QueueNotExistsException e) {
             Assertions.fail(e);
@@ -261,7 +217,7 @@ public class TestSmartQueueManager {
 
     @Test
     public void testRemovePlayerFromAllQueue() {
-        manager.createSmartQueue("test", Mockito.mock(ServerInfo.class), waiting, false);
+        manager.createSmartQueue("test", mock(ServerInfo.class), waiting, false);
 
         try {
             manager.setEnabled(name, false);

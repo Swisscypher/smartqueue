@@ -100,10 +100,8 @@ public class SmartQueue {
         });
 
         try {
-            sem.tryAcquire(ProxyServer.getInstance().getConfig().getRemotePingTimeout(), TimeUnit.MILLISECONDS);
-            return res.get();
+            return sem.tryAcquire(ProxyServer.getInstance().getConfig().getRemotePingTimeout(), TimeUnit.MILLISECONDS) ? res.get() : -1;
         } catch (InterruptedException e) {
-            e.printStackTrace();
             return -1;
         }
     }
