@@ -46,7 +46,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ ProxyServer.class })
-public class TestSmartQueueManager {
+class TestSmartQueueManager {
     private final SmartQueueManager manager = SmartQueueManager.getInstance();
 
     private static final Random random = new Random();
@@ -119,7 +119,7 @@ public class TestSmartQueueManager {
     }
 
     @Test
-    public void testCreateSmartQueue() {
+    void testCreateSmartQueue() {
         Map<String, SmartQueue> sqs = Whitebox.getInternalState(manager, "sqs");
 
         SmartQueue queue = sqs.get(name);
@@ -136,7 +136,7 @@ public class TestSmartQueueManager {
     }
 
     @Test
-    public void testDestroyAll() {
+    void testDestroyAll() {
         manager.destroyAll();
 
         Map<String, SmartQueue> sqs = Whitebox.getInternalState(manager, "sqs");
@@ -147,7 +147,7 @@ public class TestSmartQueueManager {
     }
 
     @Test
-    public void testAddPlayerToQueueWithCustomPriority() {
+    void testAddPlayerToQueueWithCustomPriority() {
         int priority = random.nextInt(100);
 
         try {
@@ -168,7 +168,7 @@ public class TestSmartQueueManager {
     }
 
     @Test
-    public void testAddPlayerToQueue() {
+    void testAddPlayerToQueue() {
         try {
             manager.addPlayerToQueue(name, player);
 
@@ -195,7 +195,7 @@ public class TestSmartQueueManager {
     }
 
     @Test
-    public void testIsPlayerInQueue() {
+    void testIsPlayerInQueue() {
         try {
             manager.addPlayerToQueue(name, player);
 
@@ -208,7 +208,7 @@ public class TestSmartQueueManager {
     }
 
     @Test
-    public void testRemovePlayerFromQueue() {
+    void testRemovePlayerFromQueue() {
         try {
             manager.setEnabled(name, false);
 
@@ -223,7 +223,7 @@ public class TestSmartQueueManager {
     }
 
     @Test
-    public void testRemovePlayerFromAllQueue() {
+    void testRemovePlayerFromAllQueue() {
         manager.createSmartQueue("test", mock(ServerInfo.class), waiting, false);
 
         try {
