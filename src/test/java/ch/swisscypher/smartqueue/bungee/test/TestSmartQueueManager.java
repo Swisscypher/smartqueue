@@ -91,11 +91,18 @@ public class TestSmartQueueManager {
         }).when(destination).ping(any());
 
         doAnswer(invocation -> {
-            Callback<Boolean> argumentAt = invocation.getArgument(1, Callback.class);
+            ServerInfo info = invocation.getArgument(0);
+            Callback<Boolean> callback = invocation.getArgument(1, Callback.class);
 
-            argumentAt.done(true, null);
+            if(info.equals(destination)) {
+                callback.done(false, new Exception());
+                return null;
+            }
+
+            callback.done(true, null);
             return null;
         }).when(player).connect(any(ServerInfo.class), any(Callback.class));
+
         doReturn("").when(config).getLabel(anyString());
 
         Whitebox.setInternalState(Config.class, "instance", config);
