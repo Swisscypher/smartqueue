@@ -159,8 +159,4 @@ public class SmartQueueManager {
             sqs.get(name).getLock().unlock();
         }
     }
-
-    public int getAvailableSlot(String name) {
-        return sqs.get(name).getAvailableSlots();
-    }
 }

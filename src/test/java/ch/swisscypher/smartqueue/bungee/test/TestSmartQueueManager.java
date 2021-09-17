@@ -23,6 +23,7 @@ import ch.swisscypher.smartqueue.bungee.exception.QueueNotExistsException;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueue;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueEntry;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueManager;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyConfig;
 import net.md_5.bungee.api.ProxyServer;
@@ -61,6 +62,7 @@ class TestSmartQueueManager {
     private static final Server server = mock(Server.class);
 
     private static final String name = UUID.randomUUID().toString();
+    private static final Server destinationServer = mock(Server.class);
     private static final ServerInfo destination = mock(ServerInfo.class);
     private static final int waiting = random.nextInt(1000);
     private static final boolean needPriority = true;
@@ -78,6 +80,8 @@ class TestSmartQueueManager {
         Whitebox.setInternalState(ProxyServer.class, "instance", proxyServer);
 
         ping.setPlayers(new ServerPing.Players(10, 5 + random.nextInt(5), new ServerPing.PlayerInfo[0]));
+
+        doReturn(destination).when(destinationServer).getInfo();
 
         doReturn(info).when(server).getInfo();
         doReturn(server).when(player).getServer();
@@ -170,23 +174,31 @@ class TestSmartQueueManager {
     @Test
     void testAddPlayerToQueue() {
         try {
-            manager.addPlayerToQueue(name, player);
-
             Map<String, SmartQueue> sqs = Whitebox.getInternalState(manager, "sqs");
             SmartQueue queue = sqs.get(name);
 
-            HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>> entries = Whitebox.getInternalState(queue, "entries");
-
-            long internalPriority = Whitebox.getInternalState(entries.get(player), "priority");
-
             ProxiedPlayer anotherPlayer = mock(ProxiedPlayer.class);
             doReturn(server).when(anotherPlayer).getServer();
-            doReturn(Collections.emptyList()).when(anotherPlayer).getPermissions();
-
+            doReturn(Collections.singletonList("smartqueue." + name + ".priority." + priority)).when(anotherPlayer).getPermissions();
+            doAnswer(invocation -> {
+                Callback<Boolean> callback = invocation.getArgument(1);
+                callback.done(true, null);
+                return null;
+            }).when(anotherPlayer).connect(any(ServerInfo.class), any(Callback.class));
             manager.addPlayerToQueue(name, anotherPlayer);
 
-            verify(anotherPlayer).sendMessage(any(BaseComponent.class));
+            manager.addPlayerToQueue(name, player);
+
+            HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>> entries = Whitebox.getInternalState(queue, "entries");
+            long internalPriority = Whitebox.getInternalState(entries.get(player), "priority");
             Assertions.assertEquals(priority, internalPriority);
+
+            ProxiedPlayer connectedPlayer = mock(ProxiedPlayer.class);
+            doReturn(server).when(connectedPlayer).getServer();
+            doReturn(Collections.emptyList()).when(connectedPlayer).getPermissions();
+            manager.addPlayerToQueue(name, connectedPlayer);
+
+            verify(connectedPlayer).sendMessage(any(BaseComponent.class));
         } catch (QueueNotExistsException e) {
             Assertions.fail(e);
         }
@@ -210,6 +222,7 @@ class TestSmartQueueManager {
     @Test
     void testRemovePlayerFromQueue() {
         try {
+            Assertions.assertThrows(QueueNotExistsException.class, () -> manager.removePlayerFromQueue(UUID.randomUUID().toString(), player));
             manager.setEnabled(name, false);
 
             manager.addPlayerToQueue(name, player);
@@ -243,5 +256,84 @@ class TestSmartQueueManager {
         } catch (QueueNotExistsException e) {
             Assertions.fail(e);
         }
+    }
+
+    @Test
+    void testGetPlayerPositionInQueue() {
+        try {
+            manager.addPlayerToQueue(name, player);
+            Assertions.assertThrows(QueueNotExistsException.class, () -> SmartQueueManager.getInstance().getPlayerPositionInQueue(UUID.randomUUID().toString(), player));
+
+            Map<String, SmartQueue> sqs = Whitebox.getInternalState(manager, "sqs");
+            SmartQueue queue = sqs.get(name);
+
+            Assertions.assertEquals(SmartQueueManager.getInstance().getPlayerPositionInQueue(name, player), queue.getPlayerPositionInQueue(player));
+        } catch (QueueNotExistsException | PlayerNotInQueueException e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
+    void testGetPlayersInQueue() {
+        try {
+            Assertions.assertThrows(QueueNotExistsException.class, () -> SmartQueueManager.getInstance().getPlayersInQueue(UUID.randomUUID().toString()));
+
+            Map<String, SmartQueue> sqs = Whitebox.getInternalState(manager, "sqs");
+            SmartQueue queue = sqs.get(name);
+
+            manager.addPlayerToQueue(name, player);
+            Assertions.assertEquals(SmartQueueManager.getInstance().getPlayersInQueue(name), queue.getPlayers());
+        } catch (QueueNotExistsException e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
+    void testPlayerSwitchServer() {
+        manager.playerSwitchServer(mock(ServerInfo.class));
+        manager.playerSwitchServer(destination);
+    }
+
+    @Test
+    void testStop() {
+        manager.stop();
+    }
+
+    @Test
+    void testSetEnabled() {
+        Assertions.assertThrows(QueueNotExistsException.class, () -> SmartQueueManager.getInstance().setEnabled(UUID.randomUUID().toString(), true));
+
+        try {
+            boolean enabled = random.nextBoolean();
+            SmartQueueManager.getInstance().setEnabled(name, enabled);
+            Map<String, SmartQueue> sqs = Whitebox.getInternalState(manager, "sqs");
+            SmartQueue smartQueue = sqs.get(name);
+
+            Assertions.assertEquals(enabled, smartQueue.isEnabled());
+            SmartQueueManager.getInstance().setEnabled(name, true);
+        } catch (QueueNotExistsException e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
+    void testIsEnabled() {
+        Assertions.assertThrows(QueueNotExistsException.class, () -> SmartQueueManager.getInstance().isEnabled(UUID.randomUUID().toString()));
+
+        Map<String, SmartQueue> sqs = Whitebox.getInternalState(manager, "sqs");
+        SmartQueue smartQueue = sqs.get(name);
+
+        try {
+            Assertions.assertEquals(SmartQueueManager.getInstance().isEnabled(name), smartQueue.isEnabled());
+        } catch (QueueNotExistsException e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
+    void testUnstuck() {
+        Assertions.assertThrows(QueueNotExistsException.class, () -> SmartQueueManager.getInstance().unstuck(UUID.randomUUID().toString()));
+
+        Assertions.assertDoesNotThrow(() -> SmartQueueManager.getInstance().unstuck(name));
     }
 }
