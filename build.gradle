@@ -1,8 +1,10 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
     id 'java'
+    id 'jacoco'
     id 'org.cadixdev.licenser' version '0.6.1'
     id 'com.github.breadmoirai.github-release' version '2.2.12'
+    id 'org.sonarqube' version '3.3'
 }
 
 group 'ch.swisscypher.smartqueue'
@@ -10,16 +12,16 @@ group 'ch.swisscypher.smartqueue'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-apply plugin: "org.cadixdev.licenser"
-apply plugin: "com.github.breadmoirai.github-release"
+apply plugin: 'org.cadixdev.licenser'
+apply plugin: 'com.github.breadmoirai.github-release'
 
 compileJava {
     dependsOn checkLicenses
 }
 
 license {
-    header = project.file("HEADER")
-    include("**/*.java")
+    header = project.file('HEADER')
+    include('**/*.java')
 
     newLine = true
 }
@@ -31,14 +33,14 @@ def determineVersion = {
         commandLine 'git', 'describe', '--tags', '--first-parent', '--always'
         standardOutput = version
     }
-    version = version.toString().replaceAll("\\s", "").replaceAll("^v", "")
+    version = version.toString().replaceAll('\\s', '').replaceAll('^v', '')
 
     try {
         exec {
-            commandLine("git", "diff", "--exit-code", "--quiet")
+            commandLine('git', 'diff', '--exit-code', '--quiet')
         }
     } catch (ignored) {
-        return "${version}.dirty"
+        return '${version}.dirty'
     }
 
     return version
@@ -53,7 +55,7 @@ jar {
 
 repositories {
     mavenCentral()
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url 'https://jitpack.io' }
 }
@@ -67,7 +69,11 @@ dependencies {
     compileOnly group: 'org.spigotmc', name:'spigot-api', version:'1.12.2-R0.1-SNAPSHOT'
     compileOnly group: 'org.bukkit', name:'bukkit', version:'1.12.2-R0.1-SNAPSHOT'
 
+    testImplementation group: 'net.md-5', name: 'bungeecord-api', version: '1.16-R0.3'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.1'
+    testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.12.4'
+    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
+    testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.2'
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.1'
 }
 
@@ -85,7 +91,7 @@ processResources {
 }
 
 shadowJar {
-    from("LICENSE")
+    from('LICENSE')
     archiveBaseName = 'SmartQueue'
 
     relocate 'org.bstats', 'ch.swisscypher.bstats'
@@ -93,8 +99,22 @@ shadowJar {
 
 tasks {
     githubRelease {
-        token System.getenv("GITHUB_TOKEN").toString()
-        owner "swisscypher"
+        token System.getenv('GITHUB_TOKEN').toString()
+        owner 'swisscypher'
         releaseAssets shadowJar.archiveFile
     }
+}
+
+jacocoTestReport {
+  reports {
+    xml.enabled true
+  }
+}
+
+sonarqube {
+  properties {
+    property 'sonar.projectKey', 'Swisscypher_smartqueue'
+    property 'sonar.organization', 'swisscypher'
+    property 'sonar.host.url', 'https://sonarcloud.io'
+  }
 }
