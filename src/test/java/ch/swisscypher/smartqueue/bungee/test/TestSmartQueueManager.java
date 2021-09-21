@@ -23,7 +23,6 @@ import ch.swisscypher.smartqueue.bungee.exception.QueueNotExistsException;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueue;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueEntry;
 import ch.swisscypher.smartqueue.bungee.queue.SmartQueueManager;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyConfig;
 import net.md_5.bungee.api.ProxyServer;
