@@ -25,13 +25,13 @@ import java.util.Random;
 
 public class TestSmartQueueEntry {
     @Test
-    public void testGet() {
+    void testGet() {
         long value = new Random().nextLong();
         Assertions.assertEquals(value, new SmartQueueEntry<>(value, 0, 1).getEntry().longValue());
     }
 
     @Test
-    public void testCompareTo() {
+    void testCompareTo() {
         SmartQueueEntry<Integer> e1 = new SmartQueueEntry<>(1, 1, 1);
         SmartQueueEntry<Integer> e2 = new SmartQueueEntry<>(1, 1, 2);
         SmartQueueEntry<Integer> e3 = new SmartQueueEntry<>(1, 1, 3);
@@ -42,7 +42,7 @@ public class TestSmartQueueEntry {
     }
 
     @Test
-    public void testCompareToPriority() {
+    void testCompareToPriority() {
         SmartQueueEntry<Integer> e1 = new SmartQueueEntry<>(1, 1, 1);
         SmartQueueEntry<Integer> e2 = new SmartQueueEntry<>(1, 1, 2);
         SmartQueueEntry<Integer> e3 = new SmartQueueEntry<>(1, 2, 3);
@@ -50,5 +50,21 @@ public class TestSmartQueueEntry {
         Assertions.assertTrue(e1.compareTo(e2) < 0);
         Assertions.assertTrue(e3.compareTo(e2) < 0);
         Assertions.assertTrue(e3.compareTo(e1) < 0);
+    }
+
+    @Test
+    void testEquals() {
+        SmartQueueEntry<Integer> e1 = new SmartQueueEntry<>(1, 1, 1);
+        SmartQueueEntry<Integer> e2 = new SmartQueueEntry<>(1, 1, 2);
+
+        Assertions.assertEquals(e1, e2);
+    }
+
+    @Test
+    void testHashCode() {
+        SmartQueueEntry<Integer> e1 = new SmartQueueEntry<>(1, 1, 1);
+        SmartQueueEntry<Integer> e2 = new SmartQueueEntry<>(1, 1, 2);
+
+        Assertions.assertEquals(e1.hashCode(), e2.hashCode());
     }
 }
