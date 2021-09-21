@@ -289,13 +289,13 @@ class TestSmartQueueManager {
 
     @Test
     void testPlayerSwitchServer() {
-        manager.playerSwitchServer(mock(ServerInfo.class));
-        manager.playerSwitchServer(destination);
+        Assertions.assertDoesNotThrow(() -> manager.playerSwitchServer(mock(ServerInfo.class)));
+        Assertions.assertDoesNotThrow(() -> manager.playerSwitchServer(destination));
     }
 
     @Test
     void testStop() {
-        manager.stop();
+        Assertions.assertDoesNotThrow(manager::stop);
     }
 
     @Test
