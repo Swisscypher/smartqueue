@@ -1,6 +1,6 @@
 /*
  * SmartQueue: Minecraft plugin implementing a queue system.
- * Copyright (C) 2021 Zayceur (dev@zayceur.ch)
+ * Copyright (C) 2021-2022 Zayceur (dev@zayceur.ch)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,8 @@ import java.util.stream.Collectors;
 
 public class SmartQueue {
 
-    private final TreeSet<SmartQueueEntry<ProxiedPlayer>> internalQueue = new TreeSet<>();
-    private final HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>> entries = new HashMap<>();
+    private final TreeSet<SmartQueueEntry<ProxiedPlayerEntry>> internalQueue = new TreeSet<>();
+    private final HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayerEntry>> entries = new HashMap<>();
     private final String regex;
     private final String name;
     private final Pattern pattern;
@@ -114,7 +114,7 @@ public class SmartQueue {
         AtomicInteger pos = new AtomicInteger(1);
         internalQueue.forEach(sqe -> sqe.setPosition(pos.getAndIncrement()));
         internalQueue.parallelStream().forEach(sqe -> {
-            sqe.getEntry().sendMessage(
+            sqe.getEntry().getProxiedPlayer().sendMessage(
                     ChatMessageType.ACTION_BAR,
                     new TextComponent(Config.getInstance().getLabel("queue-position", name, sqe.getPosition(), internalQueue.size()))
             );
@@ -123,19 +123,19 @@ public class SmartQueue {
 
     synchronized public void sendFirstPlayer() {
         Semaphore sem = new Semaphore(0);
-        SmartQueueEntry<ProxiedPlayer> player = internalQueue.first();
+        SmartQueueEntry<ProxiedPlayerEntry> player = internalQueue.first();
 
         if(player == null) {
             return;
         }
 
-        if(player.getEntry().getServer().getInfo().equals(destination)) {   // This check is performed because of the obfuscator
+        if(player.getEntry().getProxiedPlayer().getServer().getInfo().equals(destination)) {   // This check is performed because of the obfuscator
             entries.remove(internalQueue.pollFirst().getEntry());
             updateRanking();
             return;
         }
 
-        player.getEntry().connect(destination, (result, error) -> {
+        player.getEntry().getProxiedPlayer().connect(destination, (result, error) -> {
             if(error != null || !result) {
                 sem.release();
                 return;
@@ -187,7 +187,8 @@ public class SmartQueue {
 
     synchronized public void addPlayerWithCustomPriority(ProxiedPlayer player, int priority) {
         if(!isPlayerInQueue(player)) {
-            SmartQueueEntry<ProxiedPlayer> sqePlayer = new SmartQueueEntry<>(player, priority, internalQueue.size());
+            SmartQueueEntry<ProxiedPlayerEntry> sqePlayer =
+                    new SmartQueueEntry<>(new ProxiedPlayerEntry(player), priority, internalQueue.size());
             internalQueue.add(sqePlayer);
             entries.put(player, sqePlayer);
             updateRanking();
@@ -203,8 +204,10 @@ public class SmartQueue {
 
     synchronized public void removePlayer(ProxiedPlayer player) {
         if(isPlayerInQueue(player)) {
-            SmartQueueEntry<ProxiedPlayer> sqePlayer = new SmartQueueEntry<>(player);
-            internalQueue.remove(sqePlayer);
+            SmartQueueEntry<ProxiedPlayerEntry> sqePlayer = new SmartQueueEntry<>(new ProxiedPlayerEntry(player));
+            Optional<SmartQueueEntry<ProxiedPlayerEntry>> trueSqePlayer =
+                    internalQueue.stream().filter(p -> p.equals(sqePlayer)).findFirst();
+            trueSqePlayer.ifPresent(internalQueue::remove);
             entries.remove(player);
             updateRanking();
         }
