@@ -1,6 +1,6 @@
 /*
  * SmartQueue: Minecraft plugin implementing a queue system.
- * Copyright (C) 2021 Zayceur (dev@zayceur.ch)
+ * Copyright (C) 2021-2022 Zayceur (dev@zayceur.ch)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ package ch.swisscypher.smartqueue.common.util;
 
 public class LicenseManager {
 
-    public final static String NOTICE = "SmartQueue Copyright (C) 2021  Zayceur (dev@zayceur.ch)\n" +
+    public final static String NOTICE = "SmartQueue Copyright (C) 2021-2022  Zayceur (dev@zayceur.ch)\n" +
             "This program comes with ABSOLUTELY NO WARRANTY; for details type 'smartqueue w' (or '/smartqueue w' as a player).\n" +
             "This is free software, and you are welcome to redistribute it\n" +
             "under certain conditions; type `smartqueue c'  (or '/smartqueue c' as a player) for details.";
