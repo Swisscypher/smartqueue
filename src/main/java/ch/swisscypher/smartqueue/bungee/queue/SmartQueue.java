@@ -38,8 +38,8 @@ import java.util.stream.Collectors;
 
 public class SmartQueue {
 
-    private final TreeSet<SmartQueueEntry<ProxiedPlayerEntry>> internalQueue = new TreeSet<>();
-    private final HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayerEntry>> entries = new HashMap<>();
+    private final TreeSet<SmartQueueEntry<ProxiedPlayer>> internalQueue = new TreeSet<>();
+    private final HashMap<ProxiedPlayer, SmartQueueEntry<ProxiedPlayer>> entries = new HashMap<>();
     private final String regex;
     private final String name;
     private final Pattern pattern;
@@ -114,7 +114,7 @@ public class SmartQueue {
         AtomicInteger pos = new AtomicInteger(1);
         internalQueue.forEach(sqe -> sqe.setPosition(pos.getAndIncrement()));
         internalQueue.parallelStream().forEach(sqe -> {
-            sqe.getEntry().getProxiedPlayer().sendMessage(
+            sqe.getEntry().sendMessage(
                     ChatMessageType.ACTION_BAR,
                     new TextComponent(Config.getInstance().getLabel("queue-position", name, sqe.getPosition(), internalQueue.size()))
             );
@@ -123,19 +123,19 @@ public class SmartQueue {
 
     synchronized public void sendFirstPlayer() {
         Semaphore sem = new Semaphore(0);
-        SmartQueueEntry<ProxiedPlayerEntry> player = internalQueue.first();
+        SmartQueueEntry<ProxiedPlayer> player = internalQueue.first();
 
         if(player == null) {
             return;
         }
 
-        if(player.getEntry().getProxiedPlayer().getServer().getInfo().equals(destination)) {   // This check is performed because of the obfuscator
+        if(player.getEntry().getServer().getInfo().equals(destination)) {   // This check is performed because of the obfuscator
             entries.remove(internalQueue.pollFirst().getEntry());
             updateRanking();
             return;
         }
 
-        player.getEntry().getProxiedPlayer().connect(destination, (result, error) -> {
+        player.getEntry().connect(destination, (result, error) -> {
             if(error != null || !result) {
                 sem.release();
                 return;
@@ -187,8 +187,7 @@ public class SmartQueue {
 
     synchronized public void addPlayerWithCustomPriority(ProxiedPlayer player, int priority) {
         if(!isPlayerInQueue(player)) {
-            SmartQueueEntry<ProxiedPlayerEntry> sqePlayer =
-                    new SmartQueueEntry<>(new ProxiedPlayerEntry(player), priority, internalQueue.size());
+            SmartQueueEntry<ProxiedPlayer> sqePlayer = new SmartQueueEntry<>(player, priority, internalQueue.size());
             internalQueue.add(sqePlayer);
             entries.put(player, sqePlayer);
             updateRanking();
@@ -204,10 +203,9 @@ public class SmartQueue {
 
     synchronized public void removePlayer(ProxiedPlayer player) {
         if(isPlayerInQueue(player)) {
-            SmartQueueEntry<ProxiedPlayerEntry> sqePlayer = new SmartQueueEntry<>(new ProxiedPlayerEntry(player));
-            Optional<SmartQueueEntry<ProxiedPlayerEntry>> trueSqePlayer =
-                    internalQueue.stream().filter(p -> p.equals(sqePlayer)).findFirst();
-            trueSqePlayer.ifPresent(internalQueue::remove);
+            SmartQueueEntry<ProxiedPlayer> sqePlayer = entries.get(player);
+
+            internalQueue.remove(sqePlayer);
             entries.remove(player);
             updateRanking();
         }
