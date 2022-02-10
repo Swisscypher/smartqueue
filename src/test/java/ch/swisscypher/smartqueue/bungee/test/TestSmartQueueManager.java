@@ -84,7 +84,6 @@ class TestSmartQueueManager {
 
         doReturn(info).when(server).getInfo();
         doReturn(server).when(player).getServer();
-        doReturn(UUID.randomUUID()).when(player).getUniqueId();
         doReturn(Collections.singletonList("smartqueue." + name + ".priority." + priority)).when(player).getPermissions();
 
         doAnswer(invocation -> {
