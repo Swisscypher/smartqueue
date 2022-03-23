@@ -54,11 +54,13 @@ public class MainSpigot extends JavaPlugin {
     public void onEnable() {
         Bukkit.getLogger().warning(LicenseManager.NOTICE);
 
+        SQ sq = new SQ();
+
         getCommand("smartqueue").setExecutor(new LicenseCommand());
-        getCommand("join").setExecutor(new JoinCommand());
+        getCommand("join").setExecutor(new JoinCommand(sq));
         getServer().getMessenger().registerOutgoingPluginChannel(this, Channel.METHODS);
         getServer().getMessenger().registerIncomingPluginChannel(this, Channel.METHODS, MessageManager.getInstance());
-        getServer().getServicesManager().register(SmartQueue.class, new SQ(), this, ServicePriority.High);
+        getServer().getServicesManager().register(SmartQueue.class, sq, this, ServicePriority.High);
 
         new Metrics(this, 10331);
     }
