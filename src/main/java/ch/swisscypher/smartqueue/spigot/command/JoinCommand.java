@@ -25,6 +25,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class JoinCommand implements CommandExecutor {
+    SQ sq;
+
+    public JoinCommand(SQ sq) {
+        this.sq = sq;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         MainSpigot.getInstance().getThreadPool().execute(() -> {
@@ -32,7 +38,7 @@ public class JoinCommand implements CommandExecutor {
                 if (args.length != 1 || !sender.hasPermission(String.format("smartqueue.join.%s", args[0]))) {
                     return;
                 }
-                new SQ().addPlayer((Player) sender, args[0]);
+                sq.addPlayer((Player) sender, args[0]);
             }
         });
         return false;
