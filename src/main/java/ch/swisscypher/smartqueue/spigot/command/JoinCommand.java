@@ -32,8 +32,7 @@ public class JoinCommand implements CommandExecutor {
                 if (args.length != 1 || !sender.hasPermission(String.format("smartqueue.join.%s", args[0]))) {
                     return;
                 }
-                Player p = (Player) sender;
-                new SQ().addPlayer(p, args[0]);
+                new SQ().addPlayer((Player) sender, args[0]);
             }
         });
         return false;
