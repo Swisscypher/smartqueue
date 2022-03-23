@@ -6,3 +6,4 @@ website: https://zayceur.ch
 commands:
   smartqueue:
     usage: /<command> <c|w>
+  join:
