@@ -79,6 +79,15 @@ dependencies {
 </dependencies>
 ```
 
+## DeluxeHub action
+
+As of version 1.1.14, we added support for [DeluxeHub 3](https://www.spigotmc.org/resources/deluxehub-3-professional-hub-management.49425/).
+Here's an example of joining a queue as an action in DeluxeHub, to add a player to a queue named `faction`.
+
+```yaml
+  actions:
+    - '[SMARTQUEUE] faction'
+```
 
 ## Support
 

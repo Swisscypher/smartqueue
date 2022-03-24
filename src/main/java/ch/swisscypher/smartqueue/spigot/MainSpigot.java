@@ -21,6 +21,7 @@ import ch.swisscypher.smartqueue.common.constant.Channel;
 import ch.swisscypher.smartqueue.common.util.LicenseManager;
 import ch.swisscypher.smartqueue.spigot.api.SmartQueue;
 import ch.swisscypher.smartqueue.spigot.command.LicenseCommand;
+import ch.swisscypher.smartqueue.spigot.deluxehub.JoinAction;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -56,7 +57,12 @@ public class MainSpigot extends JavaPlugin {
         getCommand("smartqueue").setExecutor(new LicenseCommand());
         getServer().getMessenger().registerOutgoingPluginChannel(this, Channel.METHODS);
         getServer().getMessenger().registerIncomingPluginChannel(this, Channel.METHODS, MessageManager.getInstance());
-        getServer().getServicesManager().register(SmartQueue.class, new SQ(), this, ServicePriority.High);
+        getServer().getServicesManager().register(SmartQueue.class, SQ.getInstance(), this, ServicePriority.High);
+
+        // Add action for DeluxeHub
+        if(getServer().getPluginManager().isPluginEnabled("DeluxeHub")) {
+            JoinAction.addToManager();
+        }
 
         new Metrics(this, 10331);
     }
