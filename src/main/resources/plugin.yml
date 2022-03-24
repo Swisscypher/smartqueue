@@ -3,6 +3,7 @@ name: SmartQueue
 version: ${version}
 author: Zayceur
 website: https://zayceur.ch
+softdepend: [DeluxeHub]
 commands:
   smartqueue:
     usage: /<command> <c|w>
