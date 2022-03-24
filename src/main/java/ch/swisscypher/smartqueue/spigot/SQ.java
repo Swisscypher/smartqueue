@@ -43,6 +43,7 @@ public class SQ extends SmartQueue {
 
     private final AtomicLong ID_GENERATOR = new AtomicLong();
     private static final long TIMEOUT = 1000;
+    private static SQ instance;
 
     @Override
     public void addPlayer(Player player, String queue) {
@@ -179,5 +180,15 @@ public class SQ extends SmartQueue {
             throw new NoPlayerException();
 
         p.get().sendPluginMessage(source, channel, message);
+    }
+
+    private SQ() { }
+
+    public static SQ getInstance() {
+        if(instance == null) {
+            instance = new SQ();
+        }
+
+        return instance;
     }
 }

@@ -79,6 +79,15 @@ dependencies {
 </dependencies>
 ```
 
+## DeluxeHub action
+
+Depuis la version 1.1.14, nous supportons [DeluxeHub 3](https://www.spigotmc.org/resources/deluxehub-3-professional-hub-management.49425/).
+Ci-dessous se trouve un exemple pour rejoindre une file d'attente depuis une action dans DeluxeHub, ici le joueur rejoint la file d'attente nommée `faction .`
+
+```yaml
+  actions:
+    - '[SMARTQUEUE] faction'
+```
 
 ## Support
 
