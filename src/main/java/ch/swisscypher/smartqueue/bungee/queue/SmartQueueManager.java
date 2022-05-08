@@ -159,4 +159,8 @@ public class SmartQueueManager {
             sqs.get(name).getLock().unlock();
         }
     }
+
+    public SmartQueue getQueueFromServerInfo(ServerInfo serverInfo) {
+        return sis.get(serverInfo);
+    }
 }

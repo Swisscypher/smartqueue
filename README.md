@@ -3,7 +3,17 @@
 
 ## Installation
 
-Just put the jar you can find at the [Release page](https://github.com/Swisscypher/smartqueue/releases). 
+Just put the jar you can find at the [Release page](https://github.com/Swisscypher/smartqueue/releases).
+
+## DeluxeHub action
+
+As of version 1.1.14, we added support for [DeluxeHub 3](https://www.spigotmc.org/resources/deluxehub-3-professional-hub-management.49425/).
+Here's an example of joining a queue as an action in DeluxeHub, to add a player to a queue named `faction`.
+
+```yaml
+  actions:
+    - '[SMARTQUEUE] faction'
+```
 
 ## Configuration
 
@@ -41,7 +51,7 @@ SmartQueue uses BungeeCord permissions in order to let the players execute vario
 * `smartqueue.unstuck.*`
   * `smartqueue.unstuck.<queuename>` Allow to execute the `/unstuck <queue>` command that give a little push to the queue if it's locked
   
-Warining, the permissions need to be set on the BungeeCord server !
+Warning, the permissions need to be set on the BungeeCord server !
 ## Use SmartQueue API as a dependency
 
 Be aware to replace `Tag` with the latest available version (see the JitPack badge).
@@ -77,16 +87,6 @@ dependencies {
         <version>Tag</version>
     </dependency>
 </dependencies>
-```
-
-## DeluxeHub action
-
-As of version 1.1.14, we added support for [DeluxeHub 3](https://www.spigotmc.org/resources/deluxehub-3-professional-hub-management.49425/).
-Here's an example of joining a queue as an action in DeluxeHub, to add a player to a queue named `faction`.
-
-```yaml
-  actions:
-    - '[SMARTQUEUE] faction'
 ```
 
 ## Support
