@@ -260,4 +260,8 @@ public class SmartQueue {
     public void stop() {
         thread.interrupt();
     }
+
+    public String getName() {
+        return name;
+    }
 }

@@ -5,6 +5,16 @@
 
 Copiez simplement le jar que vous pouvez trouver sur la page [Releases](https://github.com/Swisscypher/smartqueue/releases). 
 
+## DeluxeHub action
+
+Depuis la version 1.1.14, nous supportons [DeluxeHub 3](https://www.spigotmc.org/resources/deluxehub-3-professional-hub-management.49425/).
+Ci-dessous se trouve un exemple pour rejoindre une file d'attente depuis une action dans DeluxeHub, ici le joueur rejoint la file d'attente nommée `faction .`
+
+```yaml
+  actions:
+    - '[SMARTQUEUE] faction'
+```
+
 ## Configuration
 
 Le fichier de base que vous trouverez se compose comme suit :
@@ -77,16 +87,6 @@ dependencies {
         <version>Tag</version>
     </dependency>
 </dependencies>
-```
-
-## DeluxeHub action
-
-Depuis la version 1.1.14, nous supportons [DeluxeHub 3](https://www.spigotmc.org/resources/deluxehub-3-professional-hub-management.49425/).
-Ci-dessous se trouve un exemple pour rejoindre une file d'attente depuis une action dans DeluxeHub, ici le joueur rejoint la file d'attente nommée `faction .`
-
-```yaml
-  actions:
-    - '[SMARTQUEUE] faction'
 ```
 
 ## Support
