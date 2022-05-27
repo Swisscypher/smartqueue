@@ -23,6 +23,7 @@ import ch.swisscypher.smartqueue.common.util.ByteSerializer;
 import ch.swisscypher.smartqueue.spigot.api.SmartQueue;
 import ch.swisscypher.smartqueue.spigot.exception.NoPlayerException;
 import ch.swisscypher.smartqueue.spigot.exception.TimeoutException;
+import jdk.tools.jmod.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -37,6 +38,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class SQ extends SmartQueue {
@@ -44,25 +46,30 @@ public class SQ extends SmartQueue {
     private final AtomicLong ID_GENERATOR = new AtomicLong();
     private static final long TIMEOUT = 1000;
     private static SQ instance;
+    private Logger logger = MainSpigot.getInstance().getLogger();
 
     @Override
     public void addPlayer(Player player, String queue) {
         voidMethod("addPlayer", player.getUniqueId(), queue);
+        logger.info("Added player " + player.getName() + " to queue " + queue);
     }
 
     @Override
     public void removePlayerFromQueue(Player player, String queue) {
         voidMethod("removePlayerFromQueue", player.getUniqueId(), queue);
+        logger.info("Removed player " + player.getName() + " from queue " + queue);
     }
 
     @Override
     public void removePlayerFromAllQueue(Player player) {
         voidMethod("removePlayerFromAllQueue", player.getUniqueId());
+        logger.info("Removed player " + player.getName() + " from all queues");
     }
 
     @Override
     public void setQueueStatus(String queue, boolean status) {
         voidMethod("setQueueStatus", queue, status);
+        logger.info("Set queue " + queue + " status to " + status);
     }
 
     @Override
