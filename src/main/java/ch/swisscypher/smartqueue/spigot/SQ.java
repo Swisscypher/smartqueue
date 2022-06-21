@@ -23,7 +23,6 @@ import ch.swisscypher.smartqueue.common.util.ByteSerializer;
 import ch.swisscypher.smartqueue.spigot.api.SmartQueue;
 import ch.swisscypher.smartqueue.spigot.exception.NoPlayerException;
 import ch.swisscypher.smartqueue.spigot.exception.TimeoutException;
-import jdk.tools.jmod.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -34,7 +33,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -51,25 +49,25 @@ public class SQ extends SmartQueue {
     @Override
     public void addPlayer(Player player, String queue) {
         voidMethod("addPlayer", player.getUniqueId(), queue);
-        logger.info("Added player " + player.getName() + " to queue " + queue);
+        logger.info(String.format("Player %s added to queue %s", player.getName(), queue));
     }
 
     @Override
     public void removePlayerFromQueue(Player player, String queue) {
         voidMethod("removePlayerFromQueue", player.getUniqueId(), queue);
-        logger.info("Removed player " + player.getName() + " from queue " + queue);
+        logger.info(String.format("Player %s removed from queue %s", player.getName(), queue));
     }
 
     @Override
     public void removePlayerFromAllQueue(Player player) {
         voidMethod("removePlayerFromAllQueue", player.getUniqueId());
-        logger.info("Removed player " + player.getName() + " from all queues");
+        logger.info(String.format("Player %s removed from all queues", player.getName()));
     }
 
     @Override
     public void setQueueStatus(String queue, boolean status) {
         voidMethod("setQueueStatus", queue, status);
-        logger.info("Set queue " + queue + " status to " + status);
+        logger.info(String.format("Set queue %s status to %s", queue, status));
     }
 
     @Override
