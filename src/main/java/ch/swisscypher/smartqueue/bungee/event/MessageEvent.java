@@ -39,8 +39,12 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MessageEvent implements Listener {
+
+    private Logger logger = MainBungee.getInstance().getLogger();
 
     private BiConsumer<Message, ServerInfo> addPlayer = (msg, srv) -> {
         UUID uuid = (UUID) msg.getParams()[0];
@@ -51,9 +55,13 @@ public class MessageEvent implements Listener {
         if (player != null) {
             try {
                 SmartQueueManager.getInstance().addPlayerToQueue(queue, player);
+                logger.info(String.format("Player %s added to queue %d", player.getName(), queue));
             } catch (QueueNotExistsException queueNotExistsException) {
                 player.sendMessage(new TextComponent(Config.getInstance().getLabel("queue-non-existent", queue)));
+                logger.warning(String.format("Queue %s does not exist", queue));
             }
+        } else {
+            logger.warning(String.format("Player with uuid %s not found", uuid));
         }
     };
 
@@ -66,9 +74,13 @@ public class MessageEvent implements Listener {
         if (player != null) {
             try {
                 SmartQueueManager.getInstance().removePlayerFromQueue(queue, player);
+                logger.info(String.format("Player %s removed from queue  %s", player.getName(), queue));
             } catch (QueueNotExistsException queueNotExistsException) {
                 player.sendMessage(new TextComponent(Config.getInstance().getLabel("queue-non-existent", queue)));
+                logger.warning(String.format("Queue %s does not exist", queue));
             }
+        } else {
+            logger.warning(String.format("Player with uuid %s not found", uuid));
         }
     };
 
@@ -79,6 +91,9 @@ public class MessageEvent implements Listener {
 
         if (player != null) {
             SmartQueueManager.getInstance().removePlayerFromAllQueue(player);
+            logger.info(String.format("Player %s removed from all queues", player.getName()));
+        } else {
+            logger.warning(String.format("Player with uuid %s not found", uuid));
         }
     };
 
@@ -88,11 +103,15 @@ public class MessageEvent implements Listener {
 
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
 
-        if(player != null) {
-            msg.setReturnedValue(SmartQueueManager.getInstance().isPlayerInQueue(queue, player));
+        boolean isInQueue = false;
+
+        if (player != null) {
+            isInQueue = SmartQueueManager.getInstance().isPlayerInQueue(queue, player);
         } else {
-            msg.setReturnedValue(false);
+            logger.warning(String.format("Player with uuid %s not found", uuid));
         }
+
+        msg.setReturnedValue(isInQueue);
 
         srv.sendData(Channel.METHODS, ByteSerializer.toBytes(msg));
     };
@@ -103,15 +122,21 @@ public class MessageEvent implements Listener {
 
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
 
-        if(player != null) {
+        Long position = null;
+
+        if (player != null) {
             try {
-                msg.setReturnedValue(SmartQueueManager.getInstance().getPlayerPositionInQueue(queue, player));
-            } catch (QueueNotExistsException | PlayerNotInQueueException e2) {
-                msg.setReturnedValue(null);
+                position = SmartQueueManager.getInstance().getPlayerPositionInQueue(queue, player);
+            } catch (QueueNotExistsException e) {
+                logger.warning(String.format("Queue %s does not exist", queue));
+            } catch (PlayerNotInQueueException e) {
+                logger.warning(String.format("Player %s is not in queue %s", player.getName(), queue));
             }
         } else {
-            msg.setReturnedValue(null);
+            logger.warning(String.format("Player with uuid %s not found", uuid));
         }
+
+        msg.setReturnedValue(position);
 
         srv.sendData(Channel.METHODS, ByteSerializer.toBytes(msg));
     };
@@ -121,8 +146,9 @@ public class MessageEvent implements Listener {
 
         try {
             msg.setReturnedValue(SmartQueueManager.getInstance().getPlayersInQueue(queue));
-        } catch (QueueNotExistsException queueNotExistsException) {
+        } catch (QueueNotExistsException e) {
             msg.setReturnedValue(null);
+            logger.warning(String.format("Queue %s does not exist", queue));
         }
 
         srv.sendData(Channel.METHODS, ByteSerializer.toBytes(msg));
@@ -134,8 +160,9 @@ public class MessageEvent implements Listener {
 
         try {
             SmartQueueManager.getInstance().setEnabled(queue, status);
-        } catch (QueueNotExistsException ignored) {
-
+            logger.info(String.format("Queue %s status set to %s", queue, status));
+        } catch (QueueNotExistsException e) {
+            logger.warning(String.format("Queue %s does not exist", queue));
         }
     };
 
@@ -146,6 +173,7 @@ public class MessageEvent implements Listener {
             msg.setReturnedValue(SmartQueueManager.getInstance().isEnabled(queue));
         } catch (QueueNotExistsException queueNotExistsException) {
             msg.setReturnedValue(null);
+            logger.warning(String.format("Queue %s does not exist", queue));
         }
 
         srv.sendData(Channel.METHODS, ByteSerializer.toBytes(msg));
