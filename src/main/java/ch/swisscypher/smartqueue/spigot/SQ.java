@@ -33,10 +33,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class SQ extends SmartQueue {
@@ -44,25 +44,30 @@ public class SQ extends SmartQueue {
     private final AtomicLong ID_GENERATOR = new AtomicLong();
     private static final long TIMEOUT = 1000;
     private static SQ instance;
+    private Logger logger = MainSpigot.getInstance().getLogger();
 
     @Override
     public void addPlayer(Player player, String queue) {
         voidMethod("addPlayer", player.getUniqueId(), queue);
+        logger.info(String.format("Player %s added to queue %s", player.getName(), queue));
     }
 
     @Override
     public void removePlayerFromQueue(Player player, String queue) {
         voidMethod("removePlayerFromQueue", player.getUniqueId(), queue);
+        logger.info(String.format("Player %s removed from queue %s", player.getName(), queue));
     }
 
     @Override
     public void removePlayerFromAllQueue(Player player) {
         voidMethod("removePlayerFromAllQueue", player.getUniqueId());
+        logger.info(String.format("Player %s removed from all queues", player.getName()));
     }
 
     @Override
     public void setQueueStatus(String queue, boolean status) {
         voidMethod("setQueueStatus", queue, status);
+        logger.info(String.format("Set queue %s status to %s", queue, status));
     }
 
     @Override

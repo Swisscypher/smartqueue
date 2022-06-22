@@ -17,6 +17,7 @@
 
 package ch.swisscypher.smartqueue.spigot.deluxehub;
 
+import ch.swisscypher.smartqueue.spigot.MainSpigot;
 import ch.swisscypher.smartqueue.spigot.SQ;
 import fun.lewisdev.deluxehub.DeluxeHubPlugin;
 import fun.lewisdev.deluxehub.action.Action;
@@ -35,6 +36,7 @@ public class JoinAction implements Action {
 
     @Override
     public void execute(DeluxeHubPlugin deluxeHubPlugin, Player player, String s) {
+        MainSpigot.getInstance().getLogger().info(String.format("Received join action from DeluxeMenu for player %s on queue %s", player.getName(), s));
         SQ.getInstance().addPlayer(player, s);
     }
 

@@ -39,7 +39,7 @@ public class KickEvent implements Listener {
                     // Small hack to add player at the top of the queue
                     queue.addPlayerWithCustomPriority(e.getPlayer(), Integer.MAX_VALUE);
                     ProxyServer.getInstance().getLogger().warning(String.format(
-                            "Queue %s is now paused because distant server is in whitelist or has connection issues",
+                            "Queue %s is now paused because distant server is in whitelist or has connection issue",
                             queue.getName()
                     ));
                 }
