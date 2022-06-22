@@ -55,7 +55,7 @@ public class MessageEvent implements Listener {
         if (player != null) {
             try {
                 SmartQueueManager.getInstance().addPlayerToQueue(queue, player);
-                logger.info(String.format("Player %s added to queue %d", player.getName(), queue));
+                logger.info(String.format("Player %s added to queue %s", player.getName(), queue));
             } catch (QueueNotExistsException queueNotExistsException) {
                 player.sendMessage(new TextComponent(Config.getInstance().getLabel("queue-non-existent", queue)));
                 logger.warning(String.format("Queue %s does not exist", queue));
