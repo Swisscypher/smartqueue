@@ -15,6 +15,18 @@ Ci-dessous se trouve un exemple pour rejoindre une file d'attente depuis une act
     - '[SMARTQUEUE] faction'
 ```
 
+## Citizens trait
+
+Depuis la version 1.1.17, nous supportons [Citizens](https://citizensnpcs.co/) en ayant ajouté un trait "joinqueue".
+
+Pour ajouter/enlever ce trait à un NPC, vous devez sélectionner un NPC et faire la commande suivante :
+`/trait joinqueue`
+
+Pour configurer ce trait, vous devez sélectionner un NPC et faire la commande suivante :
+`/traitc joinqueue --queue <queue> [-l] [-r]`.
+
+Les flags `-l` (interagir au clic gauche) et `-r` (interagir au clic droit) sont optionnels.
+
 ## Configuration
 
 Le fichier de base que vous trouverez se compose comme suit :
@@ -98,7 +110,7 @@ Le support est disponible en français et en anglais sur [Discord](https://disco
 Tout le code (sauf celui de l'API) est sous licence GPL v3.
 ```
 SmartQueue: Minecraft plugin implementing a queue system.
-Copyright (C) 2021-2022 Zayceur (contact@zayceur.ch)
+Copyright (C) 2021-2022 SwissCypher (contact@swisscypher.ch)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -116,7 +128,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 Le code de l'API est sous licence Apache 2.0.
 
 ```
-Copyright 2021-2022 Zayceur (contact@zayceur.ch)
+Copyright 2021-2022 SwissCypher (contact@swisscypher.ch)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

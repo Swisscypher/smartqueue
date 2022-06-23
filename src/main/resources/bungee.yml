@@ -1,4 +1,4 @@
 name: SmartQueue
 main: ch.swisscypher.smartqueue.bungee.MainBungee
 version: ${version}
-author: Zayceur
+author: SwissCypher

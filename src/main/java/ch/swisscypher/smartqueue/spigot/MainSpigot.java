@@ -1,6 +1,6 @@
 /*
  * SmartQueue: Minecraft plugin implementing a queue system.
- * Copyright (C) 2021-2022 Zayceur (dev@zayceur.ch)
+ * Copyright (C) 2021-2022 SwissCypher (contact@swisscypher.ch)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ package ch.swisscypher.smartqueue.spigot;
 import ch.swisscypher.smartqueue.common.constant.Channel;
 import ch.swisscypher.smartqueue.common.util.LicenseManager;
 import ch.swisscypher.smartqueue.spigot.api.SmartQueue;
+import ch.swisscypher.smartqueue.spigot.citizens.JoinQueueTrait;
 import ch.swisscypher.smartqueue.spigot.command.LicenseCommand;
 import ch.swisscypher.smartqueue.spigot.deluxehub.JoinAction;
 import org.bstats.bukkit.Metrics;
@@ -62,6 +63,11 @@ public class MainSpigot extends JavaPlugin {
         // Add action for DeluxeHub
         if(getServer().getPluginManager().isPluginEnabled("DeluxeHub")) {
             JoinAction.addToManager();
+        }
+
+        // Add trait for Citizens
+        if (getServer().getPluginManager().isPluginEnabled("Citizens")) {
+            JoinQueueTrait.register();
         }
 
         new Metrics(this, 10331);

@@ -1,9 +1,9 @@
 main: ch.swisscypher.smartqueue.spigot.MainSpigot
 name: SmartQueue
 version: ${version}
-author: Zayceur
-website: https://zayceur.ch
-softdepend: [DeluxeHub]
+author: SwissCypher
+website: https://swisscypher.ch
+softdepend: [DeluxeHub, Citizens]
 commands:
   smartqueue:
     usage: /<command> <c|w>
