@@ -15,6 +15,18 @@ Here's an example of joining a queue as an action in DeluxeHub, to add a player 
     - '[SMARTQUEUE] faction'
 ```
 
+## Citizens trait
+
+As of version 1.1.17, we added support for [Citizens](https://citizensnpcs.co/) by creating a "joinqueue" trait.
+
+To add/remove this trait to a NPC, you need to select a NPC and do the following command: 
+`/trait joinqueue`
+
+To configure this trait, you need to select a NPC and do the following command:
+`/traitc joinqueue --queue <queue> [-l] [-r]`.
+
+The `-l` (interact on left click) and `-r` (interact on right click) flags are optional.
+
 ## Configuration
 
 The default configuration file is as shown below :

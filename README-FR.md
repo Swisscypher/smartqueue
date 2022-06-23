@@ -15,6 +15,18 @@ Ci-dessous se trouve un exemple pour rejoindre une file d'attente depuis une act
     - '[SMARTQUEUE] faction'
 ```
 
+## Citizens trait
+
+Depuis la version 1.1.17, nous supportons [Citizens](https://citizensnpcs.co/) en ayant ajouté un trait "joinqueue".
+
+Pour ajouter/enlever ce trait à un NPC, vous devez sélectionner un NPC et faire la commande suivante :
+`/trait joinqueue`
+
+Pour configurer ce trait, vous devez sélectionner un NPC et faire la commande suivante :
+`/traitc joinqueue --queue <queue> [-l] [-r]`.
+
+Les flags `-l` (interagir au clic gauche) et `-r` (interagir au clic droit) sont optionnels.
+
 ## Configuration
 
 Le fichier de base que vous trouverez se compose comme suit :
