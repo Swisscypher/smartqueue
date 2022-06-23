@@ -98,7 +98,7 @@ Le support est disponible en français et en anglais sur [Discord](https://disco
 Tout le code (sauf celui de l'API) est sous licence GPL v3.
 ```
 SmartQueue: Minecraft plugin implementing a queue system.
-Copyright (C) 2021-2022 Zayceur (contact@zayceur.ch)
+Copyright (C) 2021-2022 SwissCypher (contact@swisscypher.ch)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -116,7 +116,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 Le code de l'API est sous licence Apache 2.0.
 
 ```
-Copyright 2021-2022 Zayceur (contact@zayceur.ch)
+Copyright 2021-2022 SwissCypher (contact@swisscypher.ch)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
