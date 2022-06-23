@@ -20,7 +20,7 @@ package ch.swisscypher.smartqueue.spigot;
 import ch.swisscypher.smartqueue.common.constant.Channel;
 import ch.swisscypher.smartqueue.common.util.LicenseManager;
 import ch.swisscypher.smartqueue.spigot.api.SmartQueue;
-import ch.swisscypher.smartqueue.spigot.citizens.trait.JoinQueueTrait;
+import ch.swisscypher.smartqueue.spigot.citizens.JoinQueueTrait;
 import ch.swisscypher.smartqueue.spigot.command.LicenseCommand;
 import ch.swisscypher.smartqueue.spigot.deluxehub.JoinAction;
 import org.bstats.bukkit.Metrics;
