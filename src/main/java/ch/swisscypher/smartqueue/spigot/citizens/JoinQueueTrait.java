@@ -15,8 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.swisscypher.smartqueue.spigot.citizens.trait;
+package ch.swisscypher.smartqueue.spigot.citizens;
 
+import ch.swisscypher.smartqueue.spigot.MainSpigot;
 import ch.swisscypher.smartqueue.spigot.SQ;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.command.CommandConfigurable;
@@ -55,6 +56,7 @@ public class JoinQueueTrait extends Trait implements CommandConfigurable {
         }
 
         SQ.getInstance().addPlayer(event.getClicker(), queueName);
+        MainSpigot.getInstance().getLogger().info(String.format("Received interaction from Citizens for player %s on queue %s", event.getClicker().getName(), queueName));
     }
 
     @EventHandler
@@ -64,6 +66,7 @@ public class JoinQueueTrait extends Trait implements CommandConfigurable {
         }
 
         SQ.getInstance().addPlayer(event.getClicker(), queueName);
+        MainSpigot.getInstance().getLogger().info(String.format("Received interaction from Citizens for player %s on queue %s", event.getClicker().getName(), queueName));
     }
 
     @Override
@@ -76,5 +79,7 @@ public class JoinQueueTrait extends Trait implements CommandConfigurable {
 
         isOnLeftClick = commandContext.hasFlag('l');
         isOnRightClick = commandContext.hasFlag('r');
+
+        MainSpigot.getInstance().getLogger().info(String.format("JoinQueueTrait configured for NPC %s, queue: %s, left click: %s, right click: %s", getNPC().getName(), queueName, isOnLeftClick, isOnRightClick));
     }
 }
